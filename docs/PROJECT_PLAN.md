@@ -8,20 +8,21 @@ A Next.js application for sharing and managing tasks between users. The applicat
 - [x] Set up project documentation structure
 - [x] Set up project folder structure
 - [x] Create basic layout components
+- [x] Implement authentication system
 
 ## Phase 2: Core Features
 - [ ] User Authentication
   - [ ] Sign up functionality
   - [ ] Login functionality
 - [ ] Home Page
-  - [ ] Start session link that redirects you to start a session page
+  - [x] Start session link that redirects you to start a session page
   - [ ] List of created sessions (create it with mock data)
-- [ ] Start a Session Page
-  - [ ] Title: find a partener
-  - [ ] Search for users
-  - [ ] When click on a user it starts a session with this user and redirects you to the session page at session/{id}
+- [x] Start a Session Page
+  - [x] Title: find a partener
+  - [x] Search for users
+  - [x] When click on a user it starts a session with this user and redirects you to the session page at session/{id}
 - [ ] Session Page
-  - [ ] A page that is divided to two parts each contains the username of the first user at the session at the top, then add task form, then tasks list, then done list which is a list of finished tasks
+  - [ ] A page that is divided to two parts each contains the username of the first user at the session at the top, then add task form, then tasks list, then done list which is a list of finished  tasks
     - [ ] Delete tasks
     - [ ] Mark tasks as complete moves them from tasks to done
 
@@ -98,11 +99,11 @@ A Next.js application for sharing and managing tasks between users. The applicat
 
 ### Sessions
 - POST /api/sessions/create -> Creates new session, returns session ID
-<!-- - GET /api/sessions/{id} -> Get session details -->
+- GET /api/sessions/{id} -> Get session details (e.g., user1, user2 and created at)
 - GET /api/sessions -> List user's sessions
 
 ### Tasks
 - GET /api/sessions/{id}/tasks -> Get all tasks in session
 - POST /api/sessions/{id}/tasks/add -> Add new task
 - PUT /api/sessions/{id}/tasks/{taskId} -> Update task status
-- DELETE /api/sessions/{id}/tasks/{taskId} -> Delete task 
+- DELETE /api/sessions/{id}/tasks/{taskId} -> Delete task
