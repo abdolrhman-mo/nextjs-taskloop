@@ -27,11 +27,6 @@ interface Task {
   updated_at: string;
 }
 
-interface TaskRequest {
-  text: string;
-  user_id: number;
-}
-
 export default function Page() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -144,7 +139,7 @@ export default function Page() {
         <h2 className="text-2xl font-bold text-white mb-4">{session?.name}</h2>
 
         {loading ? (
-          <div className="text-white text-center">Loading sessions...</div>
+          <div className="text-white text-center">Loading tasks...</div>
         ) : error ? (
           <div className="text-red-500 text-center">{error}</div>
         ) : session == null ? (

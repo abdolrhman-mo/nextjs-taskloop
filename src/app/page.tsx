@@ -40,7 +40,7 @@ export default function Home() {
     };
 
     fetchSessions();
-  }, []);
+  }, [get]);
 
   return (
     <div className="min-h-screen p-8" style={{backgroundColor: theme.background.primary}}>

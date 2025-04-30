@@ -18,7 +18,6 @@ export default function CreateSessionPage() {
   const { get, post } = useApi();
 
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [sessionName, setSessionName] = useState('');
@@ -37,13 +36,11 @@ export default function CreateSessionPage() {
       } catch (err) {
         console.error(err);
         setError('Failed to load users');
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [get]);
 
   const openSessionNameModal = (user: User) => {
     setSelectedUser(user);
