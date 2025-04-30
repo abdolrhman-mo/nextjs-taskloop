@@ -23,10 +23,9 @@ export default function CreateSessionPage() {
   const [sessionName, setSessionName] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = searchTerm.trim() ? users.filter(user =>
+    user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  ) : [];
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -94,7 +93,6 @@ export default function CreateSessionPage() {
               onClick={() => openSessionNameModal(user)}
             >
               <div className="font-medium" style={{color: theme.typography.primary}}>{user.username}</div>
-              <div className="text-sm" style={{color: theme.typography.secondary}}>{user.email}</div>
             </div>
           ))}
         </div>
