@@ -1,0 +1,13 @@
+New Feature -> Send feedback
+
+Backend
+feedback table
+- text
+- website_page (to know this feedback is from what page e.g., home page, tasks page)
+
+Frontend
+
+
+
+Chatgpt
+- https://chatgpt.com/share/6814f195-2980-8013-866d-8301e59dfe52
