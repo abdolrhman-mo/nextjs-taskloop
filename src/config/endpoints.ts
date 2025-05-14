@@ -43,6 +43,11 @@ export const ENDPOINTS = {
         operationId: 'sessions_tasks_update',
         method: 'PUT',
       },
+      DELETE: {
+        path: (id: string, taskId: string) => `/sessions/task/${id}/delete/${taskId}`,
+        operationId: 'sessions_tasks_delete',
+        method: 'DELETE',
+      },
     },
     USERS: {
       LIST: {

@@ -33,10 +33,23 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [newTaskUser1, setNewTaskUser1] = useState('');
   const [newTaskUser2, setNewTaskUser2] = useState('');
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   const [session, setSession] = useState<Session | null>(null);
-  const { get, put, post } = useApi();
+  const { get, put, post, delete: deleteRequest } = useApi();
   const { id } = useParams();
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openMenuId !== null && !(event.target as Element).closest('.task-menu')) {
+        setOpenMenuId(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [openMenuId]);
 
   const handleTaskSubmit = async (e: React.FormEvent, userId: number) => {
     e.preventDefault();
@@ -128,6 +141,90 @@ export default function Page() {
   const user1Tasks = tasks.filter(task => task.user === session?.user1);
   const user2Tasks = tasks.filter(task => task.user === session?.user2);
 
+  const deleteTask = async (taskId: number) => {
+    try {
+      await deleteRequest(ENDPOINTS.SESSIONS.TASKS.DELETE.path(id as string, taskId.toString()));
+      setTasks(prevTasks => prevTasks.filter(t => t.id !== taskId));
+    } catch (err) {
+      console.error('Failed to delete task', err);
+    }
+  };
+
+  const TaskItem = ({ task }: { task: Task }) => {
+    const isMenuOpen = openMenuId === task.id;
+    
+    return (
+      <div 
+        className="bg-gray-700 p-4 rounded-lg transition-all duration-200 
+          hover:shadow-lg border border-transparent hover:border-gray-600"
+      >
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => toggleTaskStatus(task)}
+            className="flex-shrink-0 focus:outline-none group"
+          >
+            <div className={`
+              w-5 h-5 rounded border-2 flex items-center justify-center
+              transition-colors duration-200
+              ${task.is_done 
+                ? 'bg-green-500 border-green-500' 
+                : 'border-gray-400 group-hover:border-gray-300'
+              }
+            `}>
+              {task.is_done && (
+                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
+          </button>
+          
+          <span className={`flex-grow text-white ${task.is_done ? 'line-through text-gray-400' : ''}`}>
+            {task.text}
+          </span>
+          
+          <div className="flex-shrink-0 relative task-menu">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenMenuId(isMenuOpen ? null : task.id);
+              }}
+              className="p-1 rounded-md hover:bg-gray-600 transition-colors duration-200
+                text-gray-300 hover:text-gray-100"
+              title="Task options"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+              </svg>
+            </button>
+            
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
+                <div className="py-1" role="menu" aria-orientation="vertical">
+                  <button
+                    onClick={() => {
+                      deleteTask(task.id);
+                      setOpenMenuId(null);
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300
+                      flex items-center gap-2"
+                    role="menuitem"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen p-8" style={{backgroundColor: theme.background.primary}}>
       <div className="max-w-6xl mx-auto">
@@ -147,176 +244,88 @@ export default function Page() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* User 1 Tasks */}
-            <div className="bg-gray-800 p-4 rounded-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
-              <h2 className="text-2xl font-semibold text-white mb-4">{session.user1_username}</h2>
+            <div className="bg-gray-800 p-6 rounded-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
+              <h2 className="text-2xl font-semibold text-white mb-6">{session?.user1_username}</h2>
               <form 
-                onSubmit={(e) => handleTaskSubmit(e, session.user1)}
-                className='p-4 rounded-lg mb-4 flex justify-between items-center' style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}
+                onSubmit={(e) => handleTaskSubmit(e, session?.user1 as number)}
+                className='mb-6 flex gap-2' 
               >
                 <input 
                   type="text" 
                   value={newTaskUser1}
                   onChange={(e) => setNewTaskUser1(e.target.value)}
-                  placeholder="Enter a new task"
-                  className='block rounded p-2 w-3/4 focus:outline-none' style={{backgroundColor: theme.background.primary, color: theme.typography.primary, borderColor: theme.border}}
+                  placeholder="Add a new task..."
+                  className='block rounded-md p-2 flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500' 
+                  style={{backgroundColor: theme.background.primary, color: theme.typography.primary, borderColor: theme.border}}
                 />
-                <button type="submit" className='px-4 py-2 rounded cursor-pointer hover:opacity-90' style={{backgroundColor: theme.brand.background, color: theme.brand.text}}>
+                <button 
+                  type="submit" 
+                  className='px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-all duration-200' 
+                  style={{backgroundColor: theme.brand.background, color: theme.brand.text}}
+                >
                   Add Task
                 </button>
               </form>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Tasks</h3>
-                  <div className="space-y-2">
-                    {user1Tasks.filter(task => !task.is_done).length > 0 ? (
-                      user1Tasks.filter(task => !task.is_done).map(task => (
-                        <div key={task.id} className="bg-gray-700 p-3 rounded flex justify-between items-center">
-                          <span className="text-white flex-grow">{task.text}</span>
-                          <button 
-                            onClick={() => toggleTaskStatus(task)}
-                            className="ml-2 focus:outline-none cursor-pointer"
-                          >
-                            <span 
-                              className="
-                                w-5 h-5 border-2 rounded 
-                                border-gray-400 inline-block
-                              "
-                            />
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-400 italic text-center py-4">No active tasks yet</p>
-                    )}
-                  </div>
-                </div>
 
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Done</h3>
-                  <div className="space-y-2">
-                    {user1Tasks.filter(task => task.is_done).length > 0 ? (
-                      user1Tasks.filter(task => task.is_done).map(task => (
-                        <div key={task.id} className="bg-gray-700 p-3 rounded flex justify-between items-center">
-                          <span className="line-through flex-grow">{task.text}</span>
-                          <button 
-                            onClick={() => toggleTaskStatus(task)}
-                            className="ml-2 focus:outline-none cursor-pointer"
-                          >
-                            <span 
-                              className="
-                                w-5 h-5 border-2 rounded 
-                                bg-green-500 border-green-500 inline-block
-                                flex items-center justify-center
-                              "
-                            >
-                              <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                className="h-4 w-4 text-white" 
-                                viewBox="0 0 20 20" 
-                                fill="currentColor"
-                              >
-                                <path 
-                                  fillRule="evenodd" 
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-                                  clipRule="evenodd" 
-                                />
-                              </svg>
-                            </span>
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-400 italic text-center py-4">No completed tasks</p>
-                    )}
-                  </div>
-                </div>
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-3">Active Tasks</h3>
+                {user1Tasks.filter(task => !task.is_done).map(task => (
+                  <TaskItem key={task.id} task={task} />
+                ))}
+                {user1Tasks.filter(task => !task.is_done).length === 0 && (
+                  <p className="text-gray-400 italic text-center py-4">No active tasks</p>
+                )}
+
+                <h3 className="text-lg font-semibold text-white mt-6 mb-3">Completed Tasks</h3>
+                {user1Tasks.filter(task => task.is_done).map(task => (
+                  <TaskItem key={task.id} task={task} />
+                ))}
+                {user1Tasks.filter(task => task.is_done).length === 0 && (
+                  <p className="text-gray-400 italic text-center py-4">No completed tasks</p>
+                )}
               </div>
             </div>
 
             {/* User 2 Tasks */}
-            <div className="bg-gray-800 p-4 rounded-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
-              <h2 className="text-2xl font-semibold text-white mb-4">{session.user2_username}</h2>
+            <div className="bg-gray-800 p-6 rounded-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
+              <h2 className="text-2xl font-semibold text-white mb-6">{session?.user2_username}</h2>
               <form 
-                onSubmit={(e) => handleTaskSubmit(e, session.user2)}
-                className='p-4 rounded-lg mb-4 flex justify-between items-center' style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}
+                onSubmit={(e) => handleTaskSubmit(e, session?.user2 as number)}
+                className='mb-6 flex gap-2' 
               >
                 <input 
                   type="text" 
                   value={newTaskUser2}
                   onChange={(e) => setNewTaskUser2(e.target.value)}
-                  placeholder="Enter a new task"
-                  className='block rounded p-2 w-3/4 focus:outline-none' style={{backgroundColor: theme.background.primary, color: theme.typography.primary, borderColor: theme.border}} 
+                  placeholder="Add a new task..."
+                  className='block rounded-md p-2 flex-grow focus:outline-none focus:ring-2 focus:ring-blue-500' 
+                  style={{backgroundColor: theme.background.primary, color: theme.typography.primary, borderColor: theme.border}}
                 />
-                <button type="submit" className='px-4 py-2 rounded cursor-pointer hover:opacity-90' style={{backgroundColor: theme.brand.background, color: theme.brand.text}}>
+                <button 
+                  type="submit" 
+                  className='px-4 py-2 rounded-md cursor-pointer hover:opacity-90 transition-all duration-200' 
+                  style={{backgroundColor: theme.brand.background, color: theme.brand.text}}
+                >
                   Add Task
                 </button>
               </form>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Tasks</h3>
-                  <div className="space-y-2">
-                    {user2Tasks.filter(task => !task.is_done).length > 0 ? (
-                      user2Tasks.filter(task => !task.is_done).map(task => (
-                        <div key={task.id} className="bg-gray-700 p-3 rounded flex justify-between items-center">
-                          <span className="text-white flex-grow">{task.text}</span>
-                          <button 
-                            onClick={() => toggleTaskStatus(task)}
-                            className="ml-2 focus:outline-none cursor-pointer"
-                          >
-                            <span 
-                              className="
-                                w-5 h-5 border-2 rounded 
-                                border-gray-400 inline-block
-                              "
-                            />
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-400 italic text-center py-4">No active tasks yet</p>
-                    )}
-                  </div>
-                </div>
 
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Done</h3>
-                  <div className="space-y-2">
-                    {user2Tasks.filter(task => task.is_done).length > 0 ? (
-                      user2Tasks.filter(task => task.is_done).map(task => (
-                        <div key={task.id} className="bg-gray-700 p-3 rounded flex justify-between items-center">
-                          <span className="line-through flex-grow">{task.text}</span>
-                          <button 
-                            onClick={() => toggleTaskStatus(task)}
-                            className="ml-2 focus:outline-none cursor-pointer"
-                          >
-                            <span 
-                              className="
-                                w-5 h-5 border-2 rounded 
-                                bg-green-500 border-green-500 inline-block
-                                flex items-center justify-center
-                              "
-                            >
-                              <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                className="h-4 w-4 text-white" 
-                                viewBox="0 0 20 20" 
-                                fill="currentColor"
-                              >
-                                <path 
-                                  fillRule="evenodd" 
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-                                  clipRule="evenodd" 
-                                />
-                              </svg>
-                            </span>
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-400 italic text-center py-4">No completed tasks</p>
-                    )}
-                  </div>
-                </div>
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-white mb-3">Active Tasks</h3>
+                {user2Tasks.filter(task => !task.is_done).map(task => (
+                  <TaskItem key={task.id} task={task} />
+                ))}
+                {user2Tasks.filter(task => !task.is_done).length === 0 && (
+                  <p className="text-gray-400 italic text-center py-4">No active tasks</p>
+                )}
+
+                <h3 className="text-lg font-semibold text-white mt-6 mb-3">Completed Tasks</h3>
+                {user2Tasks.filter(task => task.is_done).map(task => (
+                  <TaskItem key={task.id} task={task} />
+                ))}
+                {user2Tasks.filter(task => task.is_done).length === 0 && (
+                  <p className="text-gray-400 italic text-center py-4">No completed tasks</p>
+                )}
               </div>
             </div>
           </div>
