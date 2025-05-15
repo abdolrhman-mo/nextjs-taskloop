@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
@@ -12,7 +12,8 @@ interface LoginResponse {
   token: string;
 }
 
-export default function LoginPage() {
+// Separate the form component to use useSearchParams
+function LoginForm() {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -103,5 +104,20 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+// Main page component with Suspense
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[80vh] flex items-center justify-center" style={{backgroundColor: theme.background.primary}}>
+        <div className="text-center" style={{color: theme.typography.secondary}}>
+          Loading...
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 } 
