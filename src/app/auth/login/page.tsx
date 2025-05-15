@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { theme } from '@/config/theme';
@@ -12,16 +12,21 @@ interface LoginResponse {
   token: string;
 }
 
-// Separate the form component to use useSearchParams
-function LoginForm() {
+export default function LoginPage() {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectPath = searchParams.get('redirect') || '/';
   const { post } = useApi();
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      router.push('/');
+    }
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,12 +36,9 @@ function LoginForm() {
     try {
       const response = await post<LoginResponse>(ENDPOINTS.AUTH.LOGIN.path, { username, password });
       
-      console.log(response.message);
-
       if (response.token) {
         localStorage.setItem('token', response.token);
-        document.cookie = `token=${response.token}; path=/; max-age=2592000`; // 30 days
-        router.push(redirectPath);
+        router.push('/');
       }
     } catch (err) {
       console.error(err);
@@ -104,20 +106,5 @@ function LoginForm() {
         </form>
       </div>
     </div>
-  );
-}
-
-// Main page component with Suspense
-export default function LoginPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-[80vh] flex items-center justify-center" style={{backgroundColor: theme.background.primary}}>
-        <div className="text-center" style={{color: theme.typography.secondary}}>
-          Loading...
-        </div>
-      </div>
-    }>
-      <LoginForm />
-    </Suspense>
   );
 } 

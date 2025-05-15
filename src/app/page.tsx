@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { theme } from '@/config/theme';
 import { Nav } from '@/components/Nav';
-import { useRouter } from 'next/navigation';
+import { AuthCheck } from '@/components/AuthCheck';
 
 interface User {
   id: number;
@@ -53,19 +54,33 @@ export default function Home() {
   const { get, delete: deleteRequest } = useApi();
   const router = useRouter();
 
+  // Check authentication
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/auth/login');
+    }
+  }, [router]);
+
   // Fetch current user data
   useEffect(() => {
     const fetchUserData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
       try {
         const userData = await get<User>(ENDPOINTS.AUTH.ME.path);
         setUser(userData);
       } catch (err) {
         console.error('Failed to fetch user data:', err);
+        // If user data fetch fails, it might be due to invalid token
+        localStorage.removeItem('token');
+        router.push('/auth/login');
       }
     };
 
     fetchUserData();
-  }, [get]);
+  }, [get, router]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -290,6 +305,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{backgroundColor: theme.background.primary}}>
+      <AuthCheck />
       <Nav />
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto">
