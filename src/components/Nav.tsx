@@ -83,7 +83,7 @@ export const Nav = () => {
         <Link 
           href="/" 
           className="text-2xl sm:text-3xl font-extrabold tracking-tight hover:opacity-80 transition-opacity cursor-pointer"
-          style={{ color: theme.brand.background }}
+          style={{ color: theme.typography.primary }}
         >
           TaskLoop
         </Link>
@@ -92,12 +92,13 @@ export const Nav = () => {
           {/* Theme toggle button */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg hover:bg-opacity-10 transition-colors duration-200 cursor-pointer"
+            disabled={true}
+            className="p-2 rounded-lg transition-colors duration-200 cursor-not-allowed opacity-50"
             style={{
               backgroundColor: `${theme.brand.background}20`,
               color: theme.typography.primary
             }}
-            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            title="Theme toggle is disabled"
           >
             {isDarkMode ? (
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

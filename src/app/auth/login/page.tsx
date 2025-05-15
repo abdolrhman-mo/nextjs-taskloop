@@ -57,7 +57,7 @@ export default function LoginPage() {
           </h2>
           <p className="mt-2 text-center text-sm" style={{color: theme.typography.secondary}}>
             Or{' '}
-            <Link href="/auth/register" className="font-medium" style={{color: theme.brand.background}}>
+            <Link href="/auth/register" className="font-medium" style={{color: theme.typography.primary}}>
               create a new account
             </Link>
           </p>
