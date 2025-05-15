@@ -13,6 +13,7 @@ export const theme = {
   background: {
     primary: '#191A1A',
     secondary: '#202222',
+    tertiary: '#434343',
   },
   border: '#4C4C4C',
   hover: '#fff',

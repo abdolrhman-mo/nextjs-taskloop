@@ -1,11 +1,5 @@
 New Feature -> Send feedback
 
-Backend
-feedback table
-- text
-- website_page (to know this feedback is from what page e.g., home page, tasks page)
-
-Frontend
 
 
 
