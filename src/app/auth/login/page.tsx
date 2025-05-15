@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { theme } from '@/config/theme';
@@ -18,6 +18,8 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/';
   const { post } = useApi();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,12 +32,11 @@ export default function LoginPage() {
       
       console.log(response.message);
 
-      // Safely store token in localStorage
-      if (typeof window !== 'undefined') {
+      if (response.token) {
         localStorage.setItem('token', response.token);
+        document.cookie = `token=${response.token}; path=/; max-age=2592000`; // 30 days
+        router.push(redirectPath);
       }
-      
-      router.push('/');
     } catch (err) {
       console.error(err);
       setError('Invalid username or password');
