@@ -185,9 +185,9 @@ export default function Page() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               <TaskColumn
-                title={isUser1 ? `You (${session.user1_username})` : session.user1_username}
+                title={isUser1 ? `${session.user1_username} (you)` : session.user1_username}
                 tasks={user1Tasks}
-                showInput={isUser1 ?? false}
+                isColumnOwner={isUser1 ?? false}
                 onAddTask={(text) => handleAddTask(text, session.user1)}
                 onToggleTask={handleToggleTask}
                 onDeleteTask={handleDeleteTask}
@@ -197,9 +197,9 @@ export default function Page() {
               />
 
               <TaskColumn
-                title={isUser2 ? `You (${session.user2_username})` : session.user2_username}
+                title={isUser2 ? `${session.user2_username} (you)` : session.user2_username}
                 tasks={user2Tasks}
-                showInput={isUser2 ?? false}
+                isColumnOwner={isUser2 ?? false}
                 onAddTask={(text) => handleAddTask(text, session.user2)}
                 onToggleTask={handleToggleTask}
                 onDeleteTask={handleDeleteTask}

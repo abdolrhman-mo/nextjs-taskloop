@@ -6,7 +6,7 @@ import { TaskInput } from './TaskInput';
 interface TaskColumnProps {
   title: string;
   tasks: Task[];
-  showInput: boolean;
+  isColumnOwner: boolean;
   onAddTask: (text: string) => Promise<void>;
   onToggleTask: (task: Task) => Promise<void>;
   onDeleteTask: (taskId: number) => Promise<void>;
@@ -18,7 +18,7 @@ interface TaskColumnProps {
 export function TaskColumn({
   title,
   tasks,
-  showInput,
+  isColumnOwner,
   onAddTask,
   onToggleTask,
   onDeleteTask,
@@ -36,7 +36,7 @@ export function TaskColumn({
         <h3 className="text-2xl font-semibold text-white">{title}</h3>
       </div>
 
-      {showInput && (
+      {isColumnOwner && (
         <TaskInput
           onSubmit={onAddTask}
           isAdding={isAddingTask ?? false}
@@ -57,9 +57,10 @@ export function TaskColumn({
                   key={task.id}
                   task={task}
                   isLast={index === array.length - 1}
-                  onToggle={onToggleTask}
-                  onDelete={onDeleteTask}
+                  onToggle={isColumnOwner ? onToggleTask : undefined}
+                  onDelete={isColumnOwner ? onDeleteTask : undefined}
                   isToggling={togglingTaskId === task.id}
+                  isColumnOwner={isColumnOwner}
                 />
               ))
             ) : (
@@ -82,9 +83,10 @@ export function TaskColumn({
                   key={task.id}
                   task={task}
                   isLast={index === array.length - 1}
-                  onToggle={onToggleTask}
-                  onDelete={onDeleteTask}
+                  onToggle={isColumnOwner ? onToggleTask : undefined}
+                  onDelete={isColumnOwner ? onDeleteTask : undefined}
                   isToggling={togglingTaskId === task.id}
+                  isColumnOwner={isColumnOwner}
                 />
               ))
             ) : (
