@@ -308,6 +308,7 @@ export default function Home() {
             <div style={{backgroundColor: theme.background.secondary, color: theme.error.DEFAULT, borderColor: theme.error.DEFAULT}} className="text-center py-10 px-6 rounded-lg border">
               <h2 className="text-2xl font-semibold mb-3">Oops! Something went wrong.</h2>
               <p>{error}</p>
+              {/* Add a logout */}
             </div>
           )}
 
