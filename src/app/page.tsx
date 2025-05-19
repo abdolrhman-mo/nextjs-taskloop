@@ -2,12 +2,10 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { theme } from '@/config/theme';
 import { Nav } from '@/components/Nav';
-import { AuthCheck } from '@/components/AuthCheck';
 
 interface User {
   id: number;
@@ -52,35 +50,20 @@ export default function Home() {
     error: null
   });
   const { get, delete: deleteRequest } = useApi();
-  const router = useRouter();
-
-  // Check authentication
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/auth/login');
-    }
-  }, [router]);
 
   // Fetch current user data
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
       try {
         const userData = await get<User>(ENDPOINTS.AUTH.ME.path);
         setUser(userData);
       } catch (err) {
         console.error('Failed to fetch user data:', err);
-        // If user data fetch fails, it might be due to invalid token
-        localStorage.removeItem('token');
-        router.push('/auth/login');
       }
     };
 
     fetchUserData();
-  }, [get, router]);
+  }, [get]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -296,16 +279,8 @@ export default function Home() {
     );
   };
 
-  const handleLogout = () => {
-    // Clear both localStorage and cookie
-    localStorage.removeItem('token');
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    router.push('/auth/login');
-  };
-
   return (
     <div className="min-h-screen" style={{backgroundColor: theme.background.primary}}>
-      <AuthCheck />
       <Nav />
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto">
@@ -330,22 +305,9 @@ export default function Home() {
           )}
 
           {!loading && error && (
-            <div className="min-h-screen flex items-center justify-center p-4" style={{backgroundColor: theme.background.primary}}>
-              <div className="text-center p-8 rounded-lg shadow-md max-w-md w-full" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
-                <h2 className="text-2xl font-semibold mb-3" style={{color: theme.typography.primary}}>Oops! Something went wrong.</h2>
-                <p className="mb-6" style={{color: theme.typography.secondary}}>{error}</p>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 rounded-md font-medium transition-colors duration-200 cursor-pointer"
-                  style={{
-                    backgroundColor: theme.brand.background,
-                    color: theme.brand.text,
-                    border: `1px solid ${theme.border}`
-                  }}
-                >
-                  Logout and Try Again
-                </button>
-              </div>
+            <div style={{backgroundColor: theme.background.secondary, color: theme.error.DEFAULT, borderColor: theme.error.DEFAULT}} className="text-center py-10 px-6 rounded-lg border">
+              <h2 className="text-2xl font-semibold mb-3">Oops! Something went wrong.</h2>
+              <p>{error}</p>
             </div>
           )}
 

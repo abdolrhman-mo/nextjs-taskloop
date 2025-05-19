@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
@@ -20,14 +20,6 @@ export default function LoginPage() {
   const router = useRouter();
   const { post } = useApi();
 
-  // Check if user is already logged in
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      router.push('/');
-    }
-  }, [router]);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -36,10 +28,14 @@ export default function LoginPage() {
     try {
       const response = await post<LoginResponse>(ENDPOINTS.AUTH.LOGIN.path, { username, password });
       
-      if (response.token) {
+      console.log(response.message);
+
+      // Safely store token in localStorage
+      if (typeof window !== 'undefined') {
         localStorage.setItem('token', response.token);
-        router.push('/');
       }
+      
+      router.push('/');
     } catch (err) {
       console.error(err);
       setError('Invalid username or password');
@@ -57,7 +53,7 @@ export default function LoginPage() {
           </h2>
           <p className="mt-2 text-center text-sm" style={{color: theme.typography.secondary}}>
             Or{' '}
-            <Link href="/auth/register" className="font-medium" style={{color: theme.typography.primary}}>
+            <Link href="/auth/register" className="font-medium" style={{color: theme.brand.background}}>
               create a new account
             </Link>
           </p>

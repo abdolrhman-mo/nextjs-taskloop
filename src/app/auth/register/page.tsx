@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { theme } from '@/config/theme';
-import { AuthCheck } from '@/components/AuthCheck';
 
 interface RegisterResponse {
   message: string;
@@ -22,14 +21,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { post } = useApi();
-
-  // Check if user is already logged in
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      router.push('/');
-    }
-  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,10 +41,14 @@ export default function RegisterPage() {
         password 
       });
       
-      if (response.token && typeof window !== 'undefined') {
+      console.log(response.message);
+
+      // Safely store token in localStorage
+      if (typeof window !== 'undefined') {
         localStorage.setItem('token', response.token);
-        router.push('/');
       }
+      
+      router.push('/');
     } catch (err) {
       console.error(err);
       setError('Registration failed. Please try again.');
@@ -64,7 +59,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" style={{backgroundColor: theme.background.primary}}>
-      <AuthCheck />
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold" style={{color: theme.typography.primary}}>

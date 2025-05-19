@@ -1,24 +1,24 @@
-// Theme configuration using CSS variables
+// Theme configuration for consistent color palette
 
 export const theme = {
   brand: {
-    text: 'var(--brand-text)',
-    background: 'var(--brand-background)',
-    hover: 'var(--brand-hover)',
+    text: '#000',
+    background: '#fff',
+    hover: '#5b51d8',
   },
   typography: {
-    primary: 'var(--typography-primary)',
-    secondary: 'var(--typography-secondary)',
+    primary: '#fff',
+    secondary: '#B3B3B3',
   },
   background: {
-    primary: 'var(--background-primary)',
-    secondary: 'var(--background-secondary)',
-    tertiary: 'var(--background-tertiary)',
+    primary: '#191A1A',
+    secondary: '#202222',
+    tertiary: '#434343',
   },
-  border: 'var(--border)',
-  hover: 'var(--hover)',
+  border: '#4C4C4C',
+  hover: '#fff',
   error: {
-    DEFAULT: 'var(--error)',
-    text: 'var(--error-text)'
+    DEFAULT: '#ef4444',
+    text: '#ffffff'
   }
 };
