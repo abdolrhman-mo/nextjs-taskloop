@@ -10,7 +10,7 @@ import { Nav } from '@/components/Nav';
 import { SessionHeader } from '@/components/session/SessionHeader';
 import { TaskColumn } from '@/components/session/TaskColumn';
 import { Session, Task, User } from '@/types/session';
-import { TaskInput } from '@/components/session/TaskInput';
+import { UserTaskInput } from '@/components/session/UserTaskInput';
 
 export default function Page() {
   // State management
@@ -196,39 +196,23 @@ export default function Page() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               {isUser1 && (
-                <div className="md:col-span-2 mb-4">
-                  <div className="max-w-2xl mx-auto">
-                    <div className="flex items-center gap-3 mb-3">
-                      <h3 className="text-lg font-medium text-white">
-                        Add to {session.user1_username}&apos;s tasks
-                      </h3>
-                    </div>
-                    <div className="p-4 rounded-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
-                      <TaskInput
-                        onSubmit={(text) => handleAddTask(text, session.user1)}
-                        isAdding={taskState.isAddingTask}
-                        error={taskState.error}
-                      />
-                    </div>
-                  </div>
-                </div>
+                <UserTaskInput
+                  username={session.user1_username}
+                  userId={session.user1}
+                  onSubmit={handleAddTask}
+                  isAdding={taskState.isAddingTask}
+                  error={taskState.error}
+                />
               )}
 
               {isUser2 && (
-                <div className="md:col-span-2 mb-4">
-                  <div className="max-w-2xl mx-auto">
-                    <div className="p-4 py-6 rounded-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
-                      <h3 className="text-lg font-medium text-white pb-2">
-                        Add to {session.user2_username}&apos;s tasks
-                      </h3>
-                      <TaskInput
-                        onSubmit={(text) => handleAddTask(text, session.user2)}
-                        isAdding={taskState.isAddingTask}
-                        error={taskState.error}
-                      />
-                    </div>
-                  </div>
-                </div>
+                <UserTaskInput
+                  username={session.user2_username}
+                  userId={session.user2}
+                  onSubmit={handleAddTask}
+                  isAdding={taskState.isAddingTask}
+                  error={taskState.error}
+                />
               )}
 
               <TaskColumn

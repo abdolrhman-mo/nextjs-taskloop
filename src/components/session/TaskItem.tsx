@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { theme } from '@/config/theme';
 import { Task } from '@/types/session';
 
@@ -13,6 +13,23 @@ interface TaskItemProps {
 
 export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColumnOwner }: TaskItemProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   return (
     <>
@@ -69,7 +86,7 @@ export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColum
           </span>
           
           {isColumnOwner && (
-            <div className="flex-shrink-0 relative task-menu">
+            <div className="flex-shrink-0 relative task-menu" ref={menuRef}>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -85,22 +102,26 @@ export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColum
               </button>
               
               {isMenuOpen && (
-                <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 z-10">
+                <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10"
+                  style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
                   <div className="py-1" role="menu" aria-orientation="vertical">
                     <button
                       onClick={() => {
                         onDelete?.(task.id);
                         setIsMenuOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300
-                        flex items-center gap-2 cursor-pointer"
+                      className="w-full text-left px-4 py-2 text-sm transition-colors duration-200
+                        flex items-center gap-2 cursor-pointer hover:bg-opacity-10"
+                      style={{
+                        color: theme.error.DEFAULT,
+                      }}
                       role="menuitem"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
-                      Delete
+                      Delete task
                     </button>
                   </div>
                 </div>
