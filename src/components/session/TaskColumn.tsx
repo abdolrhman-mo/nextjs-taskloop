@@ -8,9 +8,7 @@ interface TaskColumnProps {
   isColumnOwner: boolean;
   onToggleTask: (task: Task) => Promise<void>;
   onDeleteTask: (taskId: number) => Promise<void>;
-  isAddingTask: boolean | null;
   togglingTaskId: number | null;
-  error: string | null;
 }
 
 export function TaskColumn({
@@ -19,12 +17,15 @@ export function TaskColumn({
   isColumnOwner,
   onToggleTask,
   onDeleteTask,
-  isAddingTask,
   togglingTaskId,
-  error
 }: TaskColumnProps) {
-  const activeTasks = tasks.filter(task => !task.is_done);
-  const completedTasks = tasks.filter(task => task.is_done);
+  // Sort tasks by created_at in descending order (latest first)
+  const sortedTasks = [...tasks].sort((a, b) => 
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+  
+  const activeTasks = sortedTasks.filter(task => !task.is_done);
+  const completedTasks = sortedTasks.filter(task => task.is_done);
 
   return (
     <div className="p-6 rounded-lg shadow-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>

@@ -227,9 +227,7 @@ export default function Page() {
                 isColumnOwner={isUser1 ?? false}
                 onToggleTask={handleToggleTask}
                 onDeleteTask={handleDeleteTask}
-                isAddingTask={taskState.isAddingTask}
                 togglingTaskId={taskState.togglingTaskId}
-                error={taskState.error}
               />
 
               <TaskColumn
@@ -238,9 +236,7 @@ export default function Page() {
                 isColumnOwner={isUser2 ?? false}
                 onToggleTask={handleToggleTask}
                 onDeleteTask={handleDeleteTask}
-                isAddingTask={taskState.isAddingTask}
                 togglingTaskId={taskState.togglingTaskId}
-                error={taskState.error}
               />
             </div>
           )}
