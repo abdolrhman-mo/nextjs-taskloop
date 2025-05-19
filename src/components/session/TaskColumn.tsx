@@ -1,13 +1,11 @@
 import { Task } from '@/types/session';
 import { theme } from '@/config/theme';
 import { TaskItem } from './TaskItem';
-import { TaskInput } from './TaskInput';
 
 interface TaskColumnProps {
   title: string;
   tasks: Task[];
   isColumnOwner: boolean;
-  onAddTask: (text: string) => Promise<void>;
   onToggleTask: (task: Task) => Promise<void>;
   onDeleteTask: (taskId: number) => Promise<void>;
   isAddingTask: boolean | null;
@@ -19,7 +17,6 @@ export function TaskColumn({
   title,
   tasks,
   isColumnOwner,
-  onAddTask,
   onToggleTask,
   onDeleteTask,
   isAddingTask,
@@ -35,14 +32,6 @@ export function TaskColumn({
         <div className="w-2 h-8 rounded-full" style={{backgroundColor: theme.brand.background}}></div>
         <h3 className="text-2xl font-semibold text-white">{title}</h3>
       </div>
-
-      {isColumnOwner && (
-        <TaskInput
-          onSubmit={onAddTask}
-          isAdding={isAddingTask ?? false}
-          error={error}
-        />
-      )}
 
       <div className="space-y-6">
         <div>
