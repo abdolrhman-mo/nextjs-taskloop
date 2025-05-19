@@ -55,20 +55,30 @@ export default function Page() {
 
   // Fetch session data
   useEffect(() => {
-    const fetchSession = async () => {
+    const fetchSession = async (isInitialLoad: boolean = false) => {
       try {
-        setLoading(true);
+        if (isInitialLoad) {
+          setLoading(true);
+        }
         const sessionResponse = await get<Session>(ENDPOINTS.SESSIONS.READ.path(id as string));
         setSession(sessionResponse);
       } catch (err) {
         console.error(err);
         setError('Failed to load session');
       } finally {
-        setLoading(false);
+        if (isInitialLoad) {
+          setLoading(false);
+        }
       }
     };
 
-    fetchSession();
+    if (id) {
+      // Initial load with loading state
+      fetchSession(true);
+      // Periodic updates without loading state
+      const intervalId = setInterval(() => fetchSession(false), 5000);
+      return () => clearInterval(intervalId);
+    }
   }, [get, id]);
 
   // Periodic task updates
