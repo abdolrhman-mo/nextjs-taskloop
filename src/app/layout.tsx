@@ -1,14 +1,6 @@
-import { Inter } from 'next/font/google';
 import './globals.css';
 import ClientLayout from './client-layout';
 import { metadata } from './metadata';
-
-const inter = Inter({ 
-  subsets: ['latin'],
-  display: 'swap',
-  preload: true,
-  fallback: ['system-ui', 'arial']
-});
 
 export { metadata };
 
@@ -19,7 +11,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="font-sans">
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

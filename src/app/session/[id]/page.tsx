@@ -35,7 +35,7 @@ export default function Page() {
   const isUser1 = user && session && user.id === session.user1;
   const isUser2 = user && session && user.id === session.user2;
   const isSessionParticipant = isUser1 || isUser2;
-
+      
   // Fetch current user data
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,12 +43,12 @@ export default function Page() {
         setUserLoading(true);
         const userData = await get<User>(ENDPOINTS.AUTH.ME.path);
         setUser(userData);
-      } catch (err) {
+    } catch (err) {
         console.error('Failed to fetch user data:', err);
       } finally {
         setUserLoading(false);
-      }
-    };
+    }
+  };
 
     fetchUserData();
   }, [get]);
@@ -58,7 +58,7 @@ export default function Page() {
     const fetchSession = async (isInitialLoad: boolean = false) => {
       try {
         if (isInitialLoad) {
-          setLoading(true);
+        setLoading(true);
         }
         const sessionResponse = await get<Session>(ENDPOINTS.SESSIONS.READ.path(id as string));
         setSession(sessionResponse);
@@ -67,8 +67,8 @@ export default function Page() {
         setError('Failed to load session');
       } finally {
         if (isInitialLoad) {
-          setLoading(false);
-        }
+        setLoading(false);
+      }
       }
     };
 
@@ -93,9 +93,9 @@ export default function Page() {
     };
 
     if (id) {
-      fetchTasks();
-      const intervalId = setInterval(fetchTasks, 5000);
-      return () => clearInterval(intervalId);
+    fetchTasks();
+    const intervalId = setInterval(fetchTasks, 5000);
+    return () => clearInterval(intervalId);
     }
   }, [get, id]);
 
@@ -161,7 +161,7 @@ export default function Page() {
     <div className="min-h-screen" style={{backgroundColor: theme.background.primary}}>
       <Nav />
       <main className="p-4 sm:p-6 lg:p-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
             {session && isSessionParticipant && (
               <SessionHeader
@@ -181,11 +181,11 @@ export default function Page() {
             >
               &larr; Back to Home
             </Link>
-          </div>
+        </div>
 
           {(loading || userLoading) ? (
             <div className="text-white text-center py-10">Loading...</div>
-          ) : error ? (
+        ) : error ? (
             <div className="text-red-500 text-center py-10">{error}</div>
           ) : !session ? (
             <div className="text-white text-center py-10">No session found.</div>
@@ -203,7 +203,7 @@ export default function Page() {
                   isAdding={taskState.isAddingTask}
                   error={taskState.error}
                 />
-              )}
+                    )}
 
               {isUser2 && (
                 <UserTaskInput
@@ -213,7 +213,7 @@ export default function Page() {
                   isAdding={taskState.isAddingTask}
                   error={taskState.error}
                 />
-              )}
+                    )}
 
               <TaskColumn
                 title={isUser1 ? `${session.user1_username} (you)` : session.user1_username}
@@ -232,9 +232,9 @@ export default function Page() {
                 onDeleteTask={handleDeleteTask}
                 togglingTaskId={taskState.togglingTaskId}
               />
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
       </main>
     </div>
   );
