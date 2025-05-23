@@ -307,8 +307,22 @@ export default function Home() {
           {!loading && error && (
             <div style={{backgroundColor: theme.background.secondary, color: theme.error.DEFAULT, borderColor: theme.error.DEFAULT}} className="text-center py-10 px-6 rounded-lg border">
               <h2 className="text-2xl font-semibold mb-3">Oops! Something went wrong.</h2>
-              <p>{error}</p>
-              {/* Add a logout */}
+              <p className="mb-6">{error}</p>
+              <button
+                onClick={() => {
+                  // Clear any stored tokens or session data
+                  localStorage.removeItem('token');
+                  // Redirect to login
+                  window.location.href = '/auth/login';
+                }}
+                className="px-5 py-2.5 rounded-lg cursor-pointer hover:opacity-90 transition-opacity duration-200"
+                style={{
+                  backgroundColor: theme.error.DEFAULT,
+                  color: '#ffffff'
+                }}
+              >
+                Logout and Try Again
+              </button>
             </div>
           )}
 
