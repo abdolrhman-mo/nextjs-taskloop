@@ -3,7 +3,12 @@ import './globals.css';
 import ClientLayout from './client-layout';
 import { metadata } from './metadata';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial']
+});
 
 export { metadata };
 
