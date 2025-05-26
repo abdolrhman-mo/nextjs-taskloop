@@ -7,14 +7,27 @@ interface SessionListProps {
   sessions: Session[];
   user: User | null;
   onLeave: (sessionId: string, e: React.MouseEvent) => Promise<void>;
+  onDelete: (sessionId: string, e: React.MouseEvent) => Promise<void>;
   leaveState: {
+    sessionId: string | null;
+    isLoading: boolean;
+    error: string | null;
+  };
+  deleteState: {
     sessionId: string | null;
     isLoading: boolean;
     error: string | null;
   };
 }
 
-export const SessionList = ({ sessions, user, onLeave, leaveState }: SessionListProps) => {
+export const SessionList = ({ 
+  sessions, 
+  user, 
+  onLeave,
+  onDelete,
+  leaveState,
+  deleteState 
+}: SessionListProps) => {
   const { theme } = useTheme();
   const sortedSessions = useMemo(() => {
     const sorted = [...sessions];
@@ -41,8 +54,11 @@ export const SessionList = ({ sessions, user, onLeave, leaveState }: SessionList
             user={user}
             isFeatured={true}
             onLeave={onLeave}
+            onDelete={onDelete}
             isLeaving={leaveState.sessionId === latestSession.uuid && leaveState.isLoading}
+            isDeleting={deleteState.sessionId === latestSession.uuid && deleteState.isLoading}
             leaveError={leaveState.sessionId === latestSession.uuid ? leaveState.error : null}
+            deleteError={deleteState.sessionId === latestSession.uuid ? deleteState.error : null}
           />
         </div>
       )}
@@ -59,8 +75,11 @@ export const SessionList = ({ sessions, user, onLeave, leaveState }: SessionList
                 session={session}
                 user={user}
                 onLeave={onLeave}
+                onDelete={onDelete}
                 isLeaving={leaveState.sessionId === session.uuid && leaveState.isLoading}
+                isDeleting={deleteState.sessionId === session.uuid && deleteState.isLoading}
                 leaveError={leaveState.sessionId === session.uuid ? leaveState.error : null}
+                deleteError={deleteState.sessionId === session.uuid ? deleteState.error : null}
               />
             ))}
           </div>

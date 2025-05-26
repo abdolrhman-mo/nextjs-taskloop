@@ -18,6 +18,12 @@ interface LeaveState {
   error: string | null;
 }
 
+interface DeleteState {
+  sessionId: string | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
 export default function Home() {
   const { theme } = useTheme();
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -29,7 +35,12 @@ export default function Home() {
     isLoading: false,
     error: null
   });
-  const { get, post } = useApi();
+  const [deleteState, setDeleteState] = useState<DeleteState>({
+    sessionId: null,
+    isLoading: false,
+    error: null
+  });
+  const { get, post, delete: deleteRequest } = useApi();
 
   // Fetch current user data
   useEffect(() => {
@@ -67,6 +78,36 @@ export default function Home() {
     } finally {
       setTimeout(() => {
         setLeaveState({
+          sessionId: null,
+          isLoading: false,
+          error: null
+        });
+      }, 1000);
+    }
+  };
+
+  const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setDeleteState({
+      sessionId,
+      isLoading: true,
+      error: null
+    });
+
+    try {
+      await deleteRequest(ENDPOINTS.SESSIONS.MANAGE.DELETE.path(sessionId));
+      setSessions(prevSessions => prevSessions.filter(s => s.uuid !== sessionId));
+    } catch (err) {
+      console.error('Failed to delete session:', err);
+      setDeleteState(prev => ({
+        ...prev,
+        error: 'Failed to delete session. Please try again.'
+      }));
+    } finally {
+      setTimeout(() => {
+        setDeleteState({
           sessionId: null,
           isLoading: false,
           error: null
@@ -125,7 +166,9 @@ export default function Home() {
               sessions={sessions}
               user={user}
               onLeave={handleLeaveSession}
+              onDelete={handleDeleteSession}
               leaveState={leaveState}
+              deleteState={deleteState}
             />
           )}
         </div>
