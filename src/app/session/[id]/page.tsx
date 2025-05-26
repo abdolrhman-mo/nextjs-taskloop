@@ -32,9 +32,10 @@ export default function Page() {
   const { id } = useParams();
 
   // Session participant checks
-  const isUser1 = user && session && user.id === session.user1;
-  const isUser2 = user && session && user.id === session.user2;
-  const isSessionParticipant = isUser1 || isUser2;
+  // const isCreator = user && session && user.id === session.creator;
+  const isParticipant = user && session && session.participants.some(p => p.id === user.id);
+  const currentParticipant = user && session ? session.participants.find(p => p.id === user.id) : null;
+  const otherParticipants = session ? session.participants.filter(p => p.id !== user?.id) : [];
       
   // Fetch current user data
   useEffect(() => {
@@ -43,12 +44,12 @@ export default function Page() {
         setUserLoading(true);
         const userData = await get<User>(ENDPOINTS.AUTH.ME.path);
         setUser(userData);
-    } catch (err) {
+      } catch (err) {
         console.error('Failed to fetch user data:', err);
       } finally {
         setUserLoading(false);
-    }
-  };
+      }
+    };
 
     fetchUserData();
   }, [get]);
@@ -58,7 +59,7 @@ export default function Page() {
     const fetchSession = async (isInitialLoad: boolean = false) => {
       try {
         if (isInitialLoad) {
-        setLoading(true);
+          setLoading(true);
         }
         const sessionResponse = await get<Session>(ENDPOINTS.SESSIONS.READ.path(id as string));
         setSession(sessionResponse);
@@ -67,8 +68,8 @@ export default function Page() {
         setError('Failed to load session');
       } finally {
         if (isInitialLoad) {
-        setLoading(false);
-      }
+          setLoading(false);
+        }
       }
     };
 
@@ -93,9 +94,9 @@ export default function Page() {
     };
 
     if (id) {
-    fetchTasks();
-    const intervalId = setInterval(fetchTasks, 5000);
-    return () => clearInterval(intervalId);
+      fetchTasks();
+      const intervalId = setInterval(fetchTasks, 5000);
+      return () => clearInterval(intervalId);
     }
   }, [get, id]);
 
@@ -107,7 +108,7 @@ export default function Page() {
 
     try {
       const createdTask = await post<Task>(
-        ENDPOINTS.SESSIONS.TASKS.ADD.path(session.id), 
+        ENDPOINTS.SESSIONS.TASKS.ADD.path(session.uuid), 
         { text, user_id: userId }
       );
       setTasks(prevTasks => [...prevTasks, createdTask]);
@@ -153,20 +154,20 @@ export default function Page() {
     }
   };
 
-  // Task filtering
-  const user1Tasks = tasks.filter(task => task.user === session?.user1);
-  const user2Tasks = tasks.filter(task => task.user === session?.user2);
+  // Task filtering by participant
+  const participantTasks = (participantId: number) => 
+    tasks.filter(task => task.user === participantId);
 
   return (
     <div className="min-h-screen" style={{backgroundColor: theme.background.primary}}>
       <Nav />
       <main className="p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-            {session && isSessionParticipant && (
+            {session && isParticipant && (
               <SessionHeader
                 session={session}
-                isSessionParticipant={isSessionParticipant}
+                isSessionParticipant={isParticipant}
                 onSessionUpdate={setSession}
               />
             )}
@@ -181,60 +182,55 @@ export default function Page() {
             >
               &larr; Back to Home
             </Link>
-        </div>
+          </div>
 
           {(loading || userLoading) ? (
             <div className="text-white text-center py-10">Loading...</div>
-        ) : error ? (
+          ) : error ? (
             <div className="text-red-500 text-center py-10">{error}</div>
           ) : !session ? (
             <div className="text-white text-center py-10">No session found.</div>
           ) : !user ? (
             <div className="text-white text-center py-10">Please log in to view this session.</div>
-          ) : !isSessionParticipant ? (
+          ) : !isParticipant ? (
             <div className="text-white text-center py-10">You are not a participant in this session.</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-              {isUser1 && (
+              {currentParticipant && (
                 <UserTaskInput
-                  username={session.user1_username}
-                  userId={session.user1}
+                  username={currentParticipant.username}
+                  userId={currentParticipant.id}
                   onSubmit={handleAddTask}
                   isAdding={taskState.isAddingTask}
                   error={taskState.error}
                 />
-                    )}
+              )}
 
-              {isUser2 && (
-                <UserTaskInput
-                  username={session.user2_username}
-                  userId={session.user2}
-                  onSubmit={handleAddTask}
-                  isAdding={taskState.isAddingTask}
-                  error={taskState.error}
+              {currentParticipant && (
+                <TaskColumn
+                  title={`${currentParticipant.username} (you)`}
+                  tasks={participantTasks(currentParticipant.id)}
+                  isColumnOwner={true}
+                  onToggleTask={handleToggleTask}
+                  onDeleteTask={handleDeleteTask}
+                  togglingTaskId={taskState.togglingTaskId}
                 />
-                    )}
+              )}
 
-              <TaskColumn
-                title={isUser1 ? `${session.user1_username} (you)` : session.user1_username}
-                tasks={user1Tasks}
-                isColumnOwner={isUser1 ?? false}
-                onToggleTask={handleToggleTask}
-                onDeleteTask={handleDeleteTask}
-                togglingTaskId={taskState.togglingTaskId}
-              />
-
-              <TaskColumn
-                title={isUser2 ? `${session.user2_username} (you)` : session.user2_username}
-                tasks={user2Tasks}
-                isColumnOwner={isUser2 ?? false}
-                onToggleTask={handleToggleTask}
-                onDeleteTask={handleDeleteTask}
-                togglingTaskId={taskState.togglingTaskId}
-              />
-          </div>
-        )}
-      </div>
+              {otherParticipants.map(participant => (
+                <TaskColumn
+                  key={participant.id}
+                  title={participant.username}
+                  tasks={participantTasks(participant.id)}
+                  isColumnOwner={false}
+                  onToggleTask={handleToggleTask}
+                  onDeleteTask={handleDeleteTask}
+                  togglingTaskId={taskState.togglingTaskId}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

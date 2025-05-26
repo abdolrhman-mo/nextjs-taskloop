@@ -1,24 +1,7 @@
 import Link from 'next/link';
 import { theme } from '@/config/theme';
 import { SessionMenu } from './SessionMenu';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-}
-
-interface Session {
-  id: string;
-  name: string;
-  user1: number;
-  user2: number;
-  user1_username: string;
-  user2_username: string;
-  created_at: string;
-}
+import { Session, User } from '@/types/session';
 
 interface SessionCardProps {
   session: Session;
@@ -45,8 +28,8 @@ export const SessionCard = ({
   deleteError
 }: SessionCardProps) => {
   // Determine if current user created this session
-  const isCreator = user && session.user1 === user.id;
-  const isParticipant = user && (session.user1 === user.id || session.user2 === user.id);
+  const isCreator = user && session.creator === user.id;
+  const isParticipant = user && session.participants.some(p => p.id === user.id);
 
   return (
     <div
@@ -73,19 +56,19 @@ export const SessionCard = ({
             color: theme.typography.secondary
           }}
         >
-          {isCreator ? 'Created by you' : 'Added by ' + session.user1_username}
+          {isCreator ? 'Created by you' : `Created by ${session.creator_username}`}
         </div>
       )}
 
       <SessionMenu 
-        sessionId={session.id}
+        sessionId={session.uuid}
         onDelete={onDelete}
         isDeleting={isDeleting}
         deleteError={deleteError}
       />
 
       <div className={`mb-3 ${isFeatured ? 'text-center' : ''} ${isParticipant ? 'mt-8' : ''}`}>
-        <h2 className={`font-bold group-hover:text-opacity-80 transition-colors ${isFeatured ? 'text-2xl mb-2' : 'text-xl'}`} 
+        <h2 className={`font-bold group-hover:text-opacity-80 transition-colors ${isFeatured ? 'text-2xl mb-2' : 'text-xl mb-1'}`} 
           style={{
             color: theme.typography.primary
           }}
@@ -94,27 +77,23 @@ export const SessionCard = ({
         </h2>
         <div className="space-y-1">
           <p className={`text-xs ${isFeatured ? 'mb-1' : ''}`} style={{color: theme.typography.secondary}}>
-            {isCreator ? (
-              <>You and {session.user2_username}</>
-            ) : (
-              <>You and {session.user1_username}</>
-            )}
+            {session.participants_count} {session.participants_count === 1 ? 'participant' : 'participants'}
           </p>
           <p className="text-xs" style={{color: theme.typography.secondary}}>
-            On: {formatDate(session.created_at)}
+            Created {formatDate(session.created_at)}
           </p>
         </div>
       </div>
       
       <Link 
-        href={`/session/${session.id}`}
+        href={`/session/${session.uuid}`}
         className={`block w-full text-center py-2.5 mt-4 rounded-md text-sm font-semibold transition-all duration-300 hover:opacity-90 cursor-pointer`}
         style={{
           backgroundColor: theme.background.tertiary,
           color: theme.typography.primary,
         }}
       >
-        Join Session
+        {isParticipant ? 'Join Session' : 'View Session'}
       </Link>
     </div>
   );

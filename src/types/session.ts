@@ -1,17 +1,25 @@
+export interface Participant {
+  id: number;
+  username: string;
+}
+
 export interface Session {
-  id: string;
+  id: number;
+  uuid: string;
   name: string;
-  user1: number;
-  user2: number;
-  user1_username: string;
-  user2_username: string;
+  creator: number;
+  creator_username: string;
+  participants: Participant[];
+  participants_count: number;
   created_at: string;
 }
 
 export interface Task {
   id: number;
   session: number;
+  session_uuid: string;
   user: number;
+  creator_username: string;
   text: string;
   is_done: boolean;
   created_at: string;

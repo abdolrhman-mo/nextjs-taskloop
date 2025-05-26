@@ -1,24 +1,7 @@
 import { useMemo } from 'react';
 import { theme } from '@/config/theme';
 import { SessionCard } from './SessionCard';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-}
-
-interface Session {
-  id: string;
-  name: string;
-  user1: number;
-  user2: number;
-  user1_username: string;
-  user2_username: string;
-  created_at: string;
-}
+import { Session, User } from '@/types/session';
 
 interface SessionListProps {
   sessions: Session[];
@@ -57,8 +40,8 @@ export const SessionList = ({ sessions, user, onDelete, deleteState }: SessionLi
             user={user}
             isFeatured={true}
             onDelete={onDelete}
-            isDeleting={deleteState.sessionId === latestSession.id && deleteState.isLoading}
-            deleteError={deleteState.sessionId === latestSession.id ? deleteState.error : null}
+            isDeleting={deleteState.sessionId === latestSession.uuid && deleteState.isLoading}
+            deleteError={deleteState.sessionId === latestSession.uuid ? deleteState.error : null}
           />
         </div>
       )}
@@ -71,12 +54,12 @@ export const SessionList = ({ sessions, user, onDelete, deleteState }: SessionLi
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {otherSessions.map(session => (
               <SessionCard 
-                key={session.id} 
+                key={session.uuid} 
                 session={session}
                 user={user}
                 onDelete={onDelete}
-                isDeleting={deleteState.sessionId === session.id && deleteState.isLoading}
-                deleteError={deleteState.sessionId === session.id ? deleteState.error : null}
+                isDeleting={deleteState.sessionId === session.uuid && deleteState.isLoading}
+                deleteError={deleteState.sessionId === session.uuid ? deleteState.error : null}
               />
             ))}
           </div>

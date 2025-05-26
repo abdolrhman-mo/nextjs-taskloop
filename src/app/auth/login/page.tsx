@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
@@ -20,6 +20,20 @@ export default function LoginPage() {
   const router = useRouter();
   const { post } = useApi();
 
+  // Check if we have a stored redirect path
+  useEffect(() => {
+    // If user is already authenticated, redirect them
+    if (typeof window !== 'undefined' && localStorage.getItem('token')) {
+      const redirectPath = localStorage.getItem('authRedirect');
+      if (redirectPath) {
+        localStorage.removeItem('authRedirect'); // Clear the stored path
+        router.push(redirectPath);
+      } else {
+        router.push('/');
+      }
+    }
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -33,9 +47,16 @@ export default function LoginPage() {
       // Safely store token in localStorage
       if (typeof window !== 'undefined') {
         localStorage.setItem('token', response.token);
+        
+        // Check for stored redirect path
+        const redirectPath = localStorage.getItem('authRedirect');
+        if (redirectPath) {
+          localStorage.removeItem('authRedirect'); // Clear the stored path
+          router.push(redirectPath);
+        } else {
+          router.push('/');
+        }
       }
-      
-      router.push('/');
     } catch (err) {
       console.error(err);
       setError('Invalid username or password');

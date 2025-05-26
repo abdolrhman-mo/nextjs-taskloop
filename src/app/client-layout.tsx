@@ -27,6 +27,12 @@ export default function ClientLayout({
       return;
     }
 
+    // Store the current path as the intended destination
+    // Only store session paths to prevent redirect loops
+    if (pathname.startsWith('/session/')) {
+      localStorage.setItem('authRedirect', pathname);
+    }
+
     // Redirect to login if not authenticated
     router.push('/auth/login');
   }, [pathname, router, isClient]);

@@ -10,24 +10,7 @@ import { SessionList } from '@/components/sessions/SessionList';
 import { EmptyState } from '@/components/sessions/EmptyState';
 import { ErrorState } from '@/components/sessions/ErrorState';
 import { LoadingState } from '@/components/sessions/LoadingState';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-}
-
-interface Session {
-  id: string;
-  name: string;
-  user1: number;
-  user2: number;
-  user1_username: string;
-  user2_username: string;
-  created_at: string;
-}
+import { Session, User } from '@/types/session';
 
 interface DeleteState {
   sessionId: string | null;
@@ -73,7 +56,7 @@ export default function Home() {
 
     try {
       await deleteRequest(ENDPOINTS.SESSIONS.MANAGE.DELETE.path(sessionId));
-      setSessions(prevSessions => prevSessions.filter(s => s.id !== sessionId));
+      setSessions(prevSessions => prevSessions.filter(s => s.uuid !== sessionId));
     } catch (err) {
       console.error('Failed to delete session:', err);
       setDeleteState(prev => ({

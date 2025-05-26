@@ -17,7 +17,24 @@ export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }
     error: null as string | null
   });
   const [editedName, setEditedName] = useState(session.name);
+  const [copyState, setCopyState] = useState({
+    isCopied: false,
+    error: null as string | null
+  });
   const { put } = useApi();
+
+  const handleCopyLink = async () => {
+    try {
+      const sessionUrl = `${window.location.origin}/session/${session.uuid}`;
+      await navigator.clipboard.writeText(sessionUrl);
+      setCopyState({ isCopied: true, error: null });
+      // Reset copied state after 2 seconds
+      setTimeout(() => setCopyState(prev => ({ ...prev, isCopied: false })), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+      setCopyState({ isCopied: false, error: 'Failed to copy link' });
+    }
+  };
 
   const handleEditSessionName = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +44,7 @@ export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }
 
     try {
       const updatedSession = await put<Session>(
-        ENDPOINTS.SESSIONS.MANAGE.UPDATE.path(session.id),
+        ENDPOINTS.SESSIONS.MANAGE.UPDATE.path(session.uuid),
         { name: editedName.trim() }
       );
       onSessionUpdate(updatedSession);
@@ -102,38 +119,72 @@ export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }
           </div>
         </form>
       ) : (
-        <div className="flex items-center gap-3 mb-2">
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white text-center sm:text-left">
-            {session.name}
-          </h2>
-          {isSessionParticipant && (
-            <button
-              onClick={() => {
-                setEditedName(session.name);
-                setEditState(prev => ({ ...prev, isEditing: true }));
-              }}
-              className="p-1.5 rounded-lg hover:bg-opacity-10 transition-colors duration-200 cursor-pointer"
-              style={{ 
-                backgroundColor: `${theme.brand.background}20`,
-                color: theme.brand.background
-              }}
-              title="Edit session name"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
-            </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white text-center sm:text-left">
+              {session.name}
+            </h2>
+            <div className="flex items-center gap-2">
+              {isSessionParticipant && (
+                <button
+                  onClick={() => {
+                    setEditedName(session.name);
+                    setEditState(prev => ({ ...prev, isEditing: true }));
+                  }}
+                  className="p-1.5 rounded-lg hover:bg-opacity-10 transition-colors duration-200 cursor-pointer"
+                  style={{ 
+                    backgroundColor: `${theme.brand.background}20`,
+                    color: theme.brand.background
+                  }}
+                  title="Edit session name"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={handleCopyLink}
+                className="p-1.5 rounded-lg hover:bg-opacity-10 transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
+                style={{ 
+                  backgroundColor: `${theme.brand.background}20`,
+                  color: theme.brand.background
+                }}
+                title="Copy session link"
+              >
+                {copyState.isCopied ? (
+                  <>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm">Share</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+          {copyState.error && (
+            <p className="text-sm" style={{ color: theme.error.DEFAULT }}>
+              {copyState.error}
+            </p>
+          )}
+          {editState.error && (
+            <p className="text-sm" style={{ color: theme.error.DEFAULT }}>
+              {editState.error}
+            </p>
           )}
         </div>
       )}
-      {editState.error && (
-        <p className="text-sm mt-1" style={{ color: theme.error.DEFAULT }}>
-          {editState.error}
-        </p>
-      )}
-      <p className="text-gray-400 text-sm sm:text-base mt-1">
-        Session with {session.user1_username} and {session.user2_username}
-      </p>
+      {/* <p className="text-gray-400 text-sm sm:text-base mt-1">
+        Session with {session.participants[0].username} and {session.participants[1].username}
+      </p> */}
     </div>
   );
 } 
