@@ -29,17 +29,27 @@ export function TaskColumn({
   const completedTasks = sortedTasks.filter(task => task.is_done);
 
   return (
-    <div className="p-6 rounded-lg shadow-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
-      <div className="flex items-center gap-2 mb-6">
-        <div className="w-2 h-8 rounded-full" style={{backgroundColor: theme.brand.background}}></div>
-        <h3 className="text-2xl font-semibold" style={{color: theme.typography.primary}}>{title}</h3>
+    <div className="rounded-lg shadow-lg overflow-hidden h-fit" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
+      {/* Header section with user name */}
+      <div className="p-4" style={{backgroundColor: `${theme.brand.background}10`}}>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-8 rounded-full" style={{backgroundColor: theme.brand.background}}></div>
+          <h3 className="text-2xl font-semibold" style={{color: theme.typography.primary}}>{title}</h3>
+        </div>
       </div>
 
-      <div className="space-y-6">
+      {/* Task lists section */}
+      <div className="p-6 space-y-6 min-h-0">
         <div>
           <h4 className="text-lg font-medium mb-4 flex items-center gap-2" style={{color: theme.typography.primary}}>
             <span className="w-2 h-2 rounded-full" style={{backgroundColor: theme.brand.background}}></span>
             Todo
+            <span className="text-sm px-2 py-0.5 rounded-full" style={{
+              backgroundColor: `${theme.brand.background}20`,
+              color: theme.brand.background
+            }}>
+              {activeTasks.length}
+            </span>
           </h4>
           <div className="space-y-2">
             {activeTasks.length > 0 ? (
@@ -69,6 +79,12 @@ export function TaskColumn({
           <h4 className="text-lg font-medium mb-4 flex items-center gap-2" style={{color: theme.typography.primary}}>
             <span className="w-2 h-2 rounded-full" style={{backgroundColor: theme.brand.background}}></span>
             Done
+            <span className="text-sm px-2 py-0.5 rounded-full" style={{
+              backgroundColor: `${theme.brand.background}20`,
+              color: theme.brand.background
+            }}>
+              {completedTasks.length}
+            </span>
           </h4>
           <div className="space-y-2">
             {completedTasks.length > 0 ? (

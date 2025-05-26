@@ -186,7 +186,8 @@ export default function Page() {
           ) : !isParticipant ? (
             <div className="text-center py-10" style={{color: theme.typography.primary}}>You are not a participant in this session.</div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            <div className="flex flex-col gap-6 lg:gap-8">
+              {/* Task input always at top */}
               {currentParticipant && (
                 <UserTaskInput
                   username={currentParticipant.username}
@@ -197,28 +198,36 @@ export default function Page() {
                 />
               )}
 
-              {currentParticipant && (
-                <TaskColumn
-                  title={`${currentParticipant.username} (you)`}
-                  tasks={participantTasks(currentParticipant.id)}
-                  isColumnOwner={true}
-                  onToggleTask={handleToggleTask}
-                  onDeleteTask={handleDeleteTask}
-                  togglingTaskId={taskState.togglingTaskId}
-                />
-              )}
+              {/* Task columns using CSS columns */}
+              <div className="columns-1 md:columns-2 gap-6 lg:gap-8 [column-fill:_balance]">
+                {/* Current user's task column */}
+                {currentParticipant && (
+                  <div className="break-inside-avoid mb-6 lg:mb-8">
+                    <TaskColumn
+                      title={`${currentParticipant.username} (you)`}
+                      tasks={participantTasks(currentParticipant.id)}
+                      isColumnOwner={true}
+                      onToggleTask={handleToggleTask}
+                      onDeleteTask={handleDeleteTask}
+                      togglingTaskId={taskState.togglingTaskId}
+                    />
+                  </div>
+                )}
 
-              {otherParticipants.map(participant => (
-                <TaskColumn
-                  key={participant.id}
-                  title={participant.username}
-                  tasks={participantTasks(participant.id)}
-                  isColumnOwner={false}
-                  onToggleTask={handleToggleTask}
-                  onDeleteTask={handleDeleteTask}
-                  togglingTaskId={taskState.togglingTaskId}
-                />
-              ))}
+                {/* Other participants' task columns */}
+                {otherParticipants.map(participant => (
+                  <div key={participant.id} className="break-inside-avoid mb-6 lg:mb-8">
+                    <TaskColumn
+                      title={participant.username}
+                      tasks={participantTasks(participant.id)}
+                      isColumnOwner={false}
+                      onToggleTask={handleToggleTask}
+                      onDeleteTask={handleDeleteTask}
+                      togglingTaskId={taskState.togglingTaskId}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
