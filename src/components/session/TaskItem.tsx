@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Task } from '@/types/session';
 
 interface TaskItemProps {
@@ -12,6 +12,7 @@ interface TaskItemProps {
 }
 
 export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColumnOwner }: TaskItemProps) {
+  const { theme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 

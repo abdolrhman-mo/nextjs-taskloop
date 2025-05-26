@@ -1,5 +1,5 @@
 import { Task } from '@/types/session';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { TaskItem } from './TaskItem';
 
 interface TaskColumnProps {
@@ -19,6 +19,7 @@ export function TaskColumn({
   onDeleteTask,
   togglingTaskId,
 }: TaskColumnProps) {
+  const { theme } = useTheme();
   // Sort tasks by created_at in descending order (latest first)
   const sortedTasks = [...tasks].sort((a, b) => 
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

@@ -1,4 +1,5 @@
 import './globals.css';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import ClientLayout from './client-layout';
 import { metadata } from './metadata';
 
@@ -12,7 +13,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans">
-        <ClientLayout>{children}</ClientLayout>
+        <ThemeProvider>
+          <ClientLayout>
+            {children}
+          </ClientLayout>
+        </ThemeProvider>
       </body>
     </html>
   );

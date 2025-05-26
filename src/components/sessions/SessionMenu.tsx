@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface SessionMenuProps {
   sessionId: string;
@@ -9,6 +9,7 @@ interface SessionMenuProps {
 }
 
 export const SessionMenu = ({ sessionId, onDelete, isDeleting, deleteError }: SessionMenuProps) => {
+  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
   // Close menu when clicking outside
@@ -33,7 +34,7 @@ export const SessionMenu = ({ sessionId, onDelete, isDeleting, deleteError }: Se
         }}
         className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-opacity-10 transition-colors duration-200 session-menu cursor-pointer"
         style={{ 
-          backgroundColor: `${theme.brand.background}20`,
+          backgroundColor: isOpen ? `${theme.brand.background}30` : `${theme.brand.background}20`,
           color: theme.typography.primary 
         }}
         disabled={isDeleting}
@@ -46,10 +47,11 @@ export const SessionMenu = ({ sessionId, onDelete, isDeleting, deleteError }: Se
       {/* Dropdown Menu */}
       {isOpen && (
         <div 
-          className="absolute top-12 right-3 w-48 rounded-lg shadow-lg py-1 z-10 session-menu"
+          className="absolute top-12 right-3 w-48 rounded-lg shadow-lg py-1 z-10 session-menu transition-all duration-200"
           style={{ 
             backgroundColor: theme.background.secondary,
-            border: `1px solid ${theme.border}`
+            border: `1px solid ${theme.border}`,
+            boxShadow: `0 4px 6px -1px ${theme.border}20, 0 2px 4px -1px ${theme.border}10`
           }}
         >
           <button
@@ -63,6 +65,7 @@ export const SessionMenu = ({ sessionId, onDelete, isDeleting, deleteError }: Se
             className="w-full text-left px-4 py-2 text-sm hover:bg-opacity-10 transition-colors duration-200 cursor-pointer flex items-center gap-2"
             style={{ 
               color: theme.error.DEFAULT,
+              backgroundColor: isDeleting ? `${theme.error.DEFAULT}10` : 'transparent'
             }}
             disabled={isDeleting}
           >

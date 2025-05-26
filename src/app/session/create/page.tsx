@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Nav } from '@/components/Nav';
 import Link from 'next/link';
 
@@ -14,6 +14,7 @@ interface CreateSessionResponse {
 }
 
 export default function CreateSessionPage() {
+  const { theme } = useTheme();
   const router = useRouter();
   const { post, get } = useApi();
   const [sessionName, setSessionName] = useState('');
@@ -22,12 +23,12 @@ export default function CreateSessionPage() {
 
   // Poll for session creation status
   const checkSessionStatus = async (sessionId: string) => {
-    try {
+      try {
       const session = await get(ENDPOINTS.SESSIONS.READ.path(sessionId));
       if (session) {
         router.push(`/session/${sessionId}`);
       }
-    } catch (err) {
+      } catch (err) {
       console.error('Failed to verify session:', err);
       // Keep polling if session is not ready
       setTimeout(() => checkSessionStatus(sessionId), 1000);
@@ -84,7 +85,13 @@ export default function CreateSessionPage() {
             </Link>
           </div>
           
-          <div className="max-w-2xl mx-auto bg-opacity-50 backdrop-blur-sm rounded-xl p-6" style={{backgroundColor: theme.background.secondary}}>
+          <div 
+            className="max-w-2xl mx-auto bg-opacity-50 backdrop-blur-sm rounded-xl p-6 shadow-sm transition-colors duration-200" 
+            style={{
+              backgroundColor: theme.background.secondary,
+              border: `1px solid ${theme.border}`
+            }}
+          >
             <form onSubmit={handleCreateSession} className="space-y-6">
               <div>
                 <label 
@@ -98,13 +105,14 @@ export default function CreateSessionPage() {
                   id="sessionName"
                   type="text"
                   placeholder="Enter a name for your session"
-                  className="w-full px-5 py-3 rounded-lg border focus:outline-none focus:ring-2 transition-all duration-200"
+                  className="w-full px-5 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200"
                   style={{
                     borderColor: theme.border,
                     color: theme.typography.primary,
                     backgroundColor: theme.background.primary,
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                  }}
+                    '--tw-ring-offset-color': theme.background.secondary,
+                    '--tw-ring-color': `${theme.brand.background}40`
+                  } as React.CSSProperties}
                   value={sessionName}
                   onChange={(e) => setSessionName(e.target.value)}
                   maxLength={50}
@@ -114,7 +122,14 @@ export default function CreateSessionPage() {
               </div>
 
               {error && (
-                <div className="p-4 rounded-lg" style={{backgroundColor: theme.error.DEFAULT, color: theme.error.text}}>
+                <div 
+                  className="p-4 rounded-lg transition-colors duration-200" 
+                  style={{
+                    backgroundColor: `${theme.error.DEFAULT}20`,
+                    color: theme.error.DEFAULT,
+                    border: `1px solid ${theme.error.DEFAULT}40`
+                  }}
+                >
                   {error}
                 </div>
               )}
@@ -141,7 +156,8 @@ export default function CreateSessionPage() {
                   }}
                 >
                   {isCreating && (
-                    <div className="animate-spin rounded-full h-4 w-4 border-2" 
+                    <div 
+                      className="animate-spin rounded-full h-4 w-4 border-2" 
                       style={{
                         borderColor: theme.brand.text,
                         borderTopColor: 'transparent'

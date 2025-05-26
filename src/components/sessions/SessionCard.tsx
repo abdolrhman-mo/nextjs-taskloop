@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { SessionMenu } from './SessionMenu';
 import { Session, User } from '@/types/session';
 
@@ -27,6 +27,7 @@ export const SessionCard = ({
   isDeleting,
   deleteError
 }: SessionCardProps) => {
+  const { theme } = useTheme();
   // Determine if current user created this session
   const isCreator = user && session.creator === user.id;
   const isParticipant = user && session.participants.some(p => p.id === user.id);

@@ -27,7 +27,7 @@
 
 
 // Light theme (default)
-export const theme = {
+export const lightTheme = {
   brand: {
     text: '#ffffff',
     background: '#7c3aed', // Violet-600
@@ -49,3 +49,31 @@ export const theme = {
     text: '#ffffff'
   }
 };
+
+export const darkTheme = {
+  brand: {
+    text: '#ffffff',
+    background: '#8b5cf6', // Violet-500
+    hover: '#7c3aed', // Violet-600
+  },
+  typography: {
+    primary: '#f1f5f9', // Slate-50
+    secondary: '#94a3b8', // Slate-400
+  },
+  background: {
+    primary: '#0f172a', // Slate-900
+    secondary: '#1e293b', // Slate-800
+    tertiary: '#334155', // Slate-700
+  },
+  border: '#334155', // Slate-700
+  hover: '#8b5cf6', // Violet-500
+  error: {
+    DEFAULT: '#ef4444', // Red-500
+    text: '#ffffff'
+  }
+};
+
+export type Theme = typeof lightTheme;
+
+// For backward compatibility
+export const theme = lightTheme;

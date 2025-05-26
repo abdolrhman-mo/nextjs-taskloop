@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface TaskInputProps {
   onSubmit: (text: string) => Promise<void>;
@@ -8,6 +8,7 @@ interface TaskInputProps {
 }
 
 export function TaskInput({ onSubmit, isAdding, error }: TaskInputProps) {
+  const { theme } = useTheme();
   const [newTask, setNewTask] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,19 +34,21 @@ export function TaskInput({ onSubmit, isAdding, error }: TaskInputProps) {
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="What do you need to do?"
           className={`flex-1 px-4 py-2 rounded-lg text-base transition-colors duration-200
-            focus:outline-none focus:ring-2 focus:ring-blue-500/50
+            focus:outline-none focus:ring-2 focus:ring-offset-2
             ${isAddingTask ? 'opacity-50 cursor-not-allowed' : ''}`}
           style={{
-            backgroundColor: theme.background.primary,
+            backgroundColor: theme.background.secondary,
             color: theme.typography.primary,
-            border: `1px solid ${theme.border}`
-          }}
+            border: `1px solid ${theme.border}`,
+            '--tw-ring-offset-color': theme.background.primary,
+            '--tw-ring-color': `${theme.brand.background}40`
+          } as React.CSSProperties}
           disabled={isAddingTask}
         />
         <button 
           type="submit" 
           className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
-            active:scale-95 ${(!isAddingTask && !newTask.trim()) || isAddingTask ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+            active:scale-95 ${(!isAddingTask && !newTask.trim()) || isAddingTask ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-90'}
             flex items-center gap-2`}
           style={{
             backgroundColor: theme.brand.background,

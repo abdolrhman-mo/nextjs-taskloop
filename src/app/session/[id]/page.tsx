@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { useParams } from 'next/navigation';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Nav } from '@/components/Nav';
 import { SessionHeader } from '@/components/session/SessionHeader';
 import { TaskColumn } from '@/components/session/TaskColumn';
@@ -13,6 +13,7 @@ import { Session, Task, User } from '@/types/session';
 import { UserTaskInput } from '@/components/session/UserTaskInput';
 
 export default function Page() {
+  const { theme } = useTheme();
   // State management
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);

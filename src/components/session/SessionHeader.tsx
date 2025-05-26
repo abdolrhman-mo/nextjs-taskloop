@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Session } from '@/types/session';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
@@ -11,6 +11,7 @@ interface SessionHeaderProps {
 }
 
 export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }: SessionHeaderProps) {
+  const { theme } = useTheme();
   const [editState, setEditState] = useState({
     isEditing: false,
     isLoading: false,

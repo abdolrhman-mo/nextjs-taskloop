@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { theme } from '@/config/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { SessionCard } from './SessionCard';
 import { Session, User } from '@/types/session';
 
@@ -15,6 +15,7 @@ interface SessionListProps {
 }
 
 export const SessionList = ({ sessions, user, onDelete, deleteState }: SessionListProps) => {
+  const { theme } = useTheme();
   const sortedSessions = useMemo(() => {
     const sorted = [...sessions];
     sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());

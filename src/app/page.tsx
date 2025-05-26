@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
-import { theme } from '@/config/theme';
 import { Nav } from '@/components/Nav';
 import { SessionList } from '@/components/sessions/SessionList';
 import { EmptyState } from '@/components/sessions/EmptyState';
 import { ErrorState } from '@/components/sessions/ErrorState';
 import { LoadingState } from '@/components/sessions/LoadingState';
 import { Session, User } from '@/types/session';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface DeleteState {
   sessionId: string | null;
@@ -19,6 +19,7 @@ interface DeleteState {
 }
 
 export default function Home() {
+  const { theme } = useTheme();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
