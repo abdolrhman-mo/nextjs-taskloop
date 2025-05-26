@@ -12,7 +12,7 @@ import { LoadingState } from '@/components/sessions/LoadingState';
 import { Session, User } from '@/types/session';
 import { useTheme } from '@/contexts/ThemeContext';
 
-interface DeleteState {
+interface LeaveState {
   sessionId: string | null;
   isLoading: boolean;
   error: string | null;
@@ -24,12 +24,12 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [deleteState, setDeleteState] = useState<DeleteState>({
+  const [leaveState, setLeaveState] = useState<LeaveState>({
     sessionId: null,
     isLoading: false,
     error: null
   });
-  const { get, delete: deleteRequest } = useApi();
+  const { get, post } = useApi();
 
   // Fetch current user data
   useEffect(() => {
@@ -45,28 +45,28 @@ export default function Home() {
     fetchUserData();
   }, [get]);
 
-  const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
+  const handleLeaveSession = async (sessionId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    setDeleteState({
+    setLeaveState({
       sessionId,
       isLoading: true,
       error: null
     });
 
     try {
-      await deleteRequest(ENDPOINTS.SESSIONS.MANAGE.DELETE.path(sessionId));
+      await post(ENDPOINTS.SESSIONS.LEAVE.path(sessionId));
       setSessions(prevSessions => prevSessions.filter(s => s.uuid !== sessionId));
     } catch (err) {
-      console.error('Failed to delete session:', err);
-      setDeleteState(prev => ({
+      console.error('Failed to leave session:', err);
+      setLeaveState(prev => ({
         ...prev,
-        error: 'Failed to delete session. Please try again.'
+        error: 'Failed to leave session. Please try again.'
       }));
     } finally {
       setTimeout(() => {
-        setDeleteState({
+        setLeaveState({
           sessionId: null,
           isLoading: false,
           error: null
@@ -124,8 +124,8 @@ export default function Home() {
             <SessionList 
               sessions={sessions}
               user={user}
-              onDelete={handleDeleteSession}
-              deleteState={deleteState}
+              onLeave={handleLeaveSession}
+              leaveState={leaveState}
             />
           )}
         </div>

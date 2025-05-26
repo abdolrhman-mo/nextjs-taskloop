@@ -6,15 +6,15 @@ import { Session, User } from '@/types/session';
 interface SessionListProps {
   sessions: Session[];
   user: User | null;
-  onDelete: (sessionId: string, e: React.MouseEvent) => Promise<void>;
-  deleteState: {
+  onLeave: (sessionId: string, e: React.MouseEvent) => Promise<void>;
+  leaveState: {
     sessionId: string | null;
     isLoading: boolean;
     error: string | null;
   };
 }
 
-export const SessionList = ({ sessions, user, onDelete, deleteState }: SessionListProps) => {
+export const SessionList = ({ sessions, user, onLeave, leaveState }: SessionListProps) => {
   const { theme } = useTheme();
   const sortedSessions = useMemo(() => {
     const sorted = [...sessions];
@@ -40,9 +40,9 @@ export const SessionList = ({ sessions, user, onDelete, deleteState }: SessionLi
             session={latestSession} 
             user={user}
             isFeatured={true}
-            onDelete={onDelete}
-            isDeleting={deleteState.sessionId === latestSession.uuid && deleteState.isLoading}
-            deleteError={deleteState.sessionId === latestSession.uuid ? deleteState.error : null}
+            onLeave={onLeave}
+            isLeaving={leaveState.sessionId === latestSession.uuid && leaveState.isLoading}
+            leaveError={leaveState.sessionId === latestSession.uuid ? leaveState.error : null}
           />
         </div>
       )}
@@ -58,9 +58,9 @@ export const SessionList = ({ sessions, user, onDelete, deleteState }: SessionLi
                 key={session.uuid} 
                 session={session}
                 user={user}
-                onDelete={onDelete}
-                isDeleting={deleteState.sessionId === session.uuid && deleteState.isLoading}
-                deleteError={deleteState.sessionId === session.uuid ? deleteState.error : null}
+                onLeave={onLeave}
+                isLeaving={leaveState.sessionId === session.uuid && leaveState.isLoading}
+                leaveError={leaveState.sessionId === session.uuid ? leaveState.error : null}
               />
             ))}
           </div>

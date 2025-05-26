@@ -79,12 +79,13 @@ export const ENDPOINTS = {
         operationId: 'sessions_manage_users_read',
         method: 'GET',
       },
-      // Leave a session
-      LEAVE: {
-        path: (id: string) => `/sessions/${id}/leave`,
-        operationId: 'sessions_leave_create',
-        method: 'POST',
-      },
+    },
+
+    // Leave a session
+    LEAVE: {
+      path: (uuid: string) => `/sessions/${uuid}/leave`,
+      operationId: 'sessions_leave_create',
+      method: 'POST',
     },
 
     // Task management within sessions
@@ -144,7 +145,7 @@ export const ENDPOINTS = {
  *    - Create session: ENDPOINTS.SESSIONS.CREATE.path
  *    - Get session: ENDPOINTS.SESSIONS.READ.path(sessionId)
  *    - Delete session: ENDPOINTS.SESSIONS.DELETE.path(sessionId)
- *    - Leave session: ENDPOINTS.SESSIONS.MANAGE.LEAVE.path(sessionId)
+ *    - Leave session: ENDPOINTS.SESSIONS.LEAVE.path(sessionId)
  * 
  * 3. Session Management:
  *    - Update session: ENDPOINTS.SESSIONS.MANAGE.UPDATE.path(sessionId)

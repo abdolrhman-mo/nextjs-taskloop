@@ -7,9 +7,9 @@ interface SessionCardProps {
   session: Session;
   user: User | null;
   isFeatured?: boolean;
-  onDelete: (sessionId: string, e: React.MouseEvent) => Promise<void>;
-  isDeleting: boolean;
-  deleteError: string | null;
+  onLeave: (sessionId: string, e: React.MouseEvent) => Promise<void>;
+  isLeaving: boolean;
+  leaveError: string | null;
 }
 
 // Helper to format date
@@ -23,9 +23,9 @@ export const SessionCard = ({
   session, 
   user, 
   isFeatured = false, 
-  onDelete,
-  isDeleting,
-  deleteError
+  onLeave,
+  isLeaving,
+  leaveError
 }: SessionCardProps) => {
   const { theme } = useTheme();
   // Determine if current user created this session
@@ -40,7 +40,7 @@ export const SessionCard = ({
           ? `p-6 shadow-xl border-2` 
           : `p-5 shadow-lg border`
         }
-        ${isDeleting ? 'opacity-50 pointer-events-none' : ''}
+        ${isLeaving ? 'opacity-50 pointer-events-none' : ''}
       `}
       style={{
         backgroundColor: theme.background.secondary,
@@ -63,9 +63,9 @@ export const SessionCard = ({
 
       <SessionMenu 
         sessionId={session.uuid}
-        onDelete={onDelete}
-        isDeleting={isDeleting}
-        deleteError={deleteError}
+        onLeave={onLeave}
+        isLeaving={isLeaving}
+        leaveError={leaveError}
       />
 
       <div className={`mb-3 ${isFeatured ? 'text-center' : ''} ${isParticipant ? 'mt-8' : ''}`}>
