@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { useParams } from 'next/navigation';
@@ -11,6 +10,7 @@ import { SessionHeader } from '@/components/session/SessionHeader';
 import { TaskColumn } from '@/components/session/TaskColumn';
 import { Session, Task, User } from '@/types/session';
 import { UserTaskInput } from '@/components/session/UserTaskInput';
+import { BackButton } from '@/components/common/BackButton';
 
 export default function Page() {
   const { theme } = useTheme();
@@ -163,8 +163,9 @@ export default function Page() {
     <div className="min-h-screen" style={{backgroundColor: theme.background.primary}}>
       <Nav />
       <main className="p-4 sm:p-6 lg:p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <BackButton href="/" className="mt-4 sm:mt-0" />
             {session && isParticipant && (
               <SessionHeader
                 session={session}
@@ -172,17 +173,6 @@ export default function Page() {
                 onSessionUpdate={setSession}
               />
             )}
-            <Link 
-              href="/"
-              className="text-sm font-medium px-4 py-2 rounded-md hover:opacity-80 transition-opacity duration-200 mt-4 sm:mt-0 cursor-pointer"
-              style={{
-                backgroundColor: theme.background.secondary,
-                color: theme.typography.primary,
-                border: `1px solid ${theme.border}`
-              }}
-            >
-              &larr; Back to Home
-            </Link>
           </div>
 
           {(loading || userLoading) ? (

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Task } from '@/types/session';
+import { DropdownMenu } from '@/components/common/DropdownMenu';
 
 interface TaskItemProps {
   task: Task;
@@ -31,6 +32,23 @@ export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColum
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen]);
+
+  const menuItems = [
+    {
+      label: 'Delete task',
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      ),
+      onClick: () => {
+        onDelete?.(task.id);
+        setIsMenuOpen(false);
+      },
+      isDestructive: true
+    }
+  ];
 
   return (
     <>
@@ -108,35 +126,11 @@ export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColum
                 </svg>
               </button>
               
-              {isMenuOpen && (
-                <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10"
-                  style={{
-                    backgroundColor: theme.background.secondary,
-                    border: `1px solid ${theme.border}`
-                  }}>
-                  <div className="py-1" role="menu" aria-orientation="vertical">
-                    <button
-                      onClick={() => {
-                        onDelete?.(task.id);
-                        setIsMenuOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-sm transition-colors duration-200
-                        flex items-center gap-2 cursor-pointer hover:bg-opacity-10"
-                      style={{
-                        color: theme.error.DEFAULT,
-                        backgroundColor: isMenuOpen ? `${theme.error.DEFAULT}10` : 'transparent'
-                      }}
-                      role="menuitem"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                      Delete task
-                    </button>
-                  </div>
-                </div>
-              )}
+              <DropdownMenu 
+                items={menuItems}
+                isOpen={isMenuOpen}
+                className="mt-1"
+              />
             </div>
           )}
         </div>

@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { DropdownMenu } from './common/DropdownMenu';
 
 interface User {
   id: number;
@@ -50,25 +51,50 @@ export const Nav = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/auth/login');
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        router.push('/login');
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
+  const menuItems = [
+    {
+      label: 'Logout',
+      onClick: handleLogout,
+      icon: (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+      )
+    }
+  ];
+
   return (
+    <>
     <nav 
-      className="py-4 px-4 sm:px-6 lg:px-8 shadow-md mb-8"
+      className="py-2 px-4 sm:px-6 lg:px-8 shadow-md fixed top-0 left-0 right-0 z-50"
       style={{
         backgroundColor: theme.background.secondary,
         borderBottom: `1px solid ${theme.border}`
       }}
-    >
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
+      >
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
         <Link 
           href="/" 
           className="text-2xl sm:text-3xl font-extrabold tracking-tight hover:opacity-80 transition-opacity cursor-pointer"
           style={{ color: theme.brand.background }}
-        >
+          >
           TaskLoop
         </Link>
 
@@ -85,43 +111,29 @@ export const Nav = () => {
                   backgroundColor: `${theme.brand.background}20`,
                   color: theme.typography.primary 
                 }}
-              >
+                >
                 <span className="font-medium">{username}</span>
                 <svg 
                   className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"
-                >
+                  >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
-              {/* Dropdown menu */}
-              {isDropdownOpen && (
-                <div 
-                  className="absolute right-0 mt-2 w-48 rounded-lg shadow-lg py-1 z-10"
-                  style={{ 
-                    backgroundColor: theme.background.secondary,
-                    border: `1px solid ${theme.border}`
-                  }}
-                >
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-opacity-10 transition-colors duration-200 cursor-pointer"
-                    style={{ 
-                      color: theme.typography.primary,
-                      backgroundColor: `${theme.brand.background}20`
-                    }}
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+              <DropdownMenu 
+                items={menuItems}
+                isOpen={isDropdownOpen}
+                className="mt-2"
+              />
             </div>
           )}
         </div>
       </div>
     </nav>
+    <div className='h-16'></div>
+    </>
   );
 }; 

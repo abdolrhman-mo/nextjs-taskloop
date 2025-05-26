@@ -39,7 +39,7 @@ export function TaskColumn({
         <div>
           <h4 className="text-lg font-medium mb-4 flex items-center gap-2" style={{color: theme.typography.primary}}>
             <span className="w-2 h-2 rounded-full" style={{backgroundColor: theme.brand.background}}></span>
-            Active Tasks
+            Todo
           </h4>
           <div className="space-y-2">
             {activeTasks.length > 0 ? (
@@ -59,7 +59,7 @@ export function TaskColumn({
                 backgroundColor: theme.background.primary,
                 color: theme.typography.secondary
               }}>
-                No active tasks
+                No tasks
               </p>
             )}
           </div>
@@ -68,7 +68,7 @@ export function TaskColumn({
         <div className="pt-6 border-t" style={{borderColor: theme.border}}>
           <h4 className="text-lg font-medium mb-4 flex items-center gap-2" style={{color: theme.typography.primary}}>
             <span className="w-2 h-2 rounded-full" style={{backgroundColor: theme.brand.background}}></span>
-            Completed Tasks
+            Done
           </h4>
           <div className="space-y-2">
             {completedTasks.length > 0 ? (
@@ -88,7 +88,7 @@ export function TaskColumn({
                 backgroundColor: theme.background.primary,
                 color: theme.typography.secondary
               }}>
-                No completed tasks
+                No tasks done
               </p>
             )}
           </div>

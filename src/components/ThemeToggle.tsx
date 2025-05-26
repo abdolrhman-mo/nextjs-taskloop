@@ -8,7 +8,7 @@ export const ThemeToggle = () => {
   return (
     <button 
       onClick={toggleTheme}
-      className="p-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer"
+      className="p-2 rounded-lg transition-colors duration-200 focus:outline-none cursor-pointer"
       style={{
         backgroundColor: `${theme.brand.background}20`,
         color: theme.brand.background,
