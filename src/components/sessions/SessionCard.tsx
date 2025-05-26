@@ -36,8 +36,8 @@ export const SessionCard = ({
       className={`
         block rounded-lg overflow-hidden transition-all duration-300 group relative
         ${isFeatured 
-          ? `p-6 shadow-xl hover:shadow-2xl border-2` 
-          : `p-5 shadow-lg hover:shadow-xl border`
+          ? `p-6 shadow-xl border-2` 
+          : `p-5 shadow-lg border`
         }
         ${isDeleting ? 'opacity-50 pointer-events-none' : ''}
       `}

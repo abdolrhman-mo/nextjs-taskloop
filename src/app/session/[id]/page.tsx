@@ -185,15 +185,15 @@ export default function Page() {
           </div>
 
           {(loading || userLoading) ? (
-            <div className="text-white text-center py-10">Loading...</div>
+            <div className="text-center py-10" style={{color: theme.typography.primary}}>Loading...</div>
           ) : error ? (
-            <div className="text-red-500 text-center py-10">{error}</div>
+            <div className="text-center py-10" style={{color: theme.error.DEFAULT}}>{error}</div>
           ) : !session ? (
-            <div className="text-white text-center py-10">No session found.</div>
+            <div className="text-center py-10" style={{color: theme.typography.primary}}>No session found.</div>
           ) : !user ? (
-            <div className="text-white text-center py-10">Please log in to view this session.</div>
+            <div className="text-center py-10" style={{color: theme.typography.primary}}>Please log in to view this session.</div>
           ) : !isParticipant ? (
-            <div className="text-white text-center py-10">You are not a participant in this session.</div>
+            <div className="text-center py-10" style={{color: theme.typography.primary}}>You are not a participant in this session.</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               {currentParticipant && (

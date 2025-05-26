@@ -81,7 +81,10 @@ export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColum
             </div>
           )}
           
-          <span className={`flex-grow text-white ${task.is_done ? 'line-through text-gray-400' : ''} ${isToggling ? 'opacity-50' : ''}`}>
+          <span className={`flex-grow ${task.is_done ? 'line-through' : ''} ${isToggling ? 'opacity-50' : ''}`} 
+            style={{
+              color: task.is_done ? theme.typography.secondary : theme.typography.primary
+            }}>
             {task.text}
           </span>
           
@@ -92,8 +95,11 @@ export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColum
                   e.stopPropagation();
                   setIsMenuOpen(!isMenuOpen);
                 }}
-                className="p-1 rounded-md hover:bg-gray-600 transition-colors duration-200
-                  text-gray-300 hover:text-gray-100 cursor-pointer"
+                className="p-1 rounded-md transition-colors duration-200 cursor-pointer"
+                style={{
+                  color: theme.typography.secondary,
+                  backgroundColor: isMenuOpen ? `${theme.background.tertiary}40` : 'transparent'
+                }}
                 title="Task options"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -103,7 +109,10 @@ export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColum
               
               {isMenuOpen && (
                 <div className="absolute right-0 mt-1 w-48 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-10"
-                  style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
+                  style={{
+                    backgroundColor: theme.background.secondary,
+                    border: `1px solid ${theme.border}`
+                  }}>
                   <div className="py-1" role="menu" aria-orientation="vertical">
                     <button
                       onClick={() => {
@@ -114,6 +123,7 @@ export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColum
                         flex items-center gap-2 cursor-pointer hover:bg-opacity-10"
                       style={{
                         color: theme.error.DEFAULT,
+                        backgroundColor: isMenuOpen ? `${theme.error.DEFAULT}10` : 'transparent'
                       }}
                       role="menuitem"
                     >

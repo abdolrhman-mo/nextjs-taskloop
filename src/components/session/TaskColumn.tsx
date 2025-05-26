@@ -31,12 +31,12 @@ export function TaskColumn({
     <div className="p-6 rounded-lg shadow-lg" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
       <div className="flex items-center gap-2 mb-6">
         <div className="w-2 h-8 rounded-full" style={{backgroundColor: theme.brand.background}}></div>
-        <h3 className="text-2xl font-semibold text-white">{title}</h3>
+        <h3 className="text-2xl font-semibold" style={{color: theme.typography.primary}}>{title}</h3>
       </div>
 
       <div className="space-y-6">
         <div>
-          <h4 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
+          <h4 className="text-lg font-medium mb-4 flex items-center gap-2" style={{color: theme.typography.primary}}>
             <span className="w-2 h-2 rounded-full" style={{backgroundColor: theme.brand.background}}></span>
             Active Tasks
           </h4>
@@ -54,7 +54,10 @@ export function TaskColumn({
                 />
               ))
             ) : (
-              <p className="text-gray-400 italic text-center py-4 bg-opacity-50 rounded-lg" style={{backgroundColor: theme.background.primary}}>
+              <p className="italic text-center py-4 bg-opacity-50 rounded-lg" style={{
+                backgroundColor: theme.background.primary,
+                color: theme.typography.secondary
+              }}>
                 No active tasks
               </p>
             )}
@@ -62,7 +65,7 @@ export function TaskColumn({
         </div>
 
         <div className="pt-6 border-t" style={{borderColor: theme.border}}>
-          <h4 className="text-lg font-medium text-white mb-4 flex items-center gap-2">
+          <h4 className="text-lg font-medium mb-4 flex items-center gap-2" style={{color: theme.typography.primary}}>
             <span className="w-2 h-2 rounded-full" style={{backgroundColor: theme.brand.background}}></span>
             Completed Tasks
           </h4>
@@ -80,7 +83,10 @@ export function TaskColumn({
                 />
               ))
             ) : (
-              <p className="text-gray-400 italic text-center py-4 bg-opacity-50 rounded-lg" style={{backgroundColor: theme.background.primary}}>
+              <p className="italic text-center py-4 bg-opacity-50 rounded-lg" style={{
+                backgroundColor: theme.background.primary,
+                color: theme.typography.secondary
+              }}>
                 No completed tasks
               </p>
             )}

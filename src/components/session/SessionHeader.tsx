@@ -121,7 +121,8 @@ export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }
       ) : (
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-3">
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white text-center sm:text-left">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-center sm:text-left" 
+              style={{color: theme.typography.primary}}>
               {session.name}
             </h2>
             <div className="flex items-center gap-2">
