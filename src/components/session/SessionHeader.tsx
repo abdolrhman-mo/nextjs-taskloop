@@ -59,10 +59,11 @@ export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }
           ) : (
             <div className="flex items-center gap-3">
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" 
-                style={{color: theme.typography.primary}}>
+                style={{color: theme.typography.primary}}
+              >
                 {session.name}
-              </h2>
-              {isSessionParticipant && (
+            </h2>
+            {isSessionParticipant && (
                 <EditSessionButton
                   onClick={() => setEditState(prev => ({ ...prev, isEditing: true }))}
                 />
@@ -75,11 +76,11 @@ export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }
         </div>
       </div>
       <div className="mt-2">
-        {editState.error && (
+      {editState.error && (
           <p className="text-sm" style={{ color: theme.error.DEFAULT }}>
-            {editState.error}
-          </p>
-        )}
+          {editState.error}
+        </p>
+      )}
       </div>
     </div>
   );

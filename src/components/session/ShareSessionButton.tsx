@@ -1,4 +1,5 @@
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHoverBackground } from '@/hooks/useHoverBackground';
 
 interface ShareSessionButtonProps {
   onClick: () => void;
@@ -7,16 +8,19 @@ interface ShareSessionButtonProps {
 
 export function ShareSessionButton({ onClick, isCopied }: ShareSessionButtonProps) {
   const { theme } = useTheme();
+  const { handleMouseEnter, handleMouseLeave, style } = useHoverBackground();
 
   return (
     <button
       onClick={onClick}
-      className="p-1.5 rounded-lg hover:bg-opacity-10 transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
+      className="p-1.5 rounded-lg transition-colors duration-200 cursor-pointer flex items-center gap-1.5"
       style={{ 
-        backgroundColor: `${theme.brand.background}20`,
+        ...style,
         color: theme.brand.background
       }}
       title="Copy session link"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {isCopied ? (
         <>

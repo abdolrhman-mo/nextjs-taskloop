@@ -1,4 +1,5 @@
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHoverBackground } from '@/hooks/useHoverBackground';
 
 interface MenuItem {
   label: string;
@@ -17,12 +18,16 @@ interface DropdownMenuProps {
 
 export const DropdownMenu = ({ items, isOpen, className = '' }: DropdownMenuProps) => {
   const { theme } = useTheme();
-
-  if (!isOpen) return null;
+  const { handleMouseEnter, handleMouseLeave, style } = useHoverBackground();
 
   return (
     <div 
-      className={`absolute right-0 mt-1 w-48 rounded-lg shadow-lg py-1 z-10 transition-all duration-200 ${className}`}
+      className={`
+        absolute right-0 mt-1 w-48 rounded-lg shadow-lg py-1 z-10
+        transition-all duration-200 ease-in-out
+        ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}
+        ${className}
+      `}
       style={{ 
         backgroundColor: theme.background.secondary,
         border: `1px solid ${theme.border}`,
@@ -34,12 +39,14 @@ export const DropdownMenu = ({ items, isOpen, className = '' }: DropdownMenuProp
           <button
             key={index}
             onClick={item.onClick}
-            className="w-full text-left px-4 py-2 text-sm transition-colors duration-200
-              flex items-center gap-2 cursor-pointer hover:bg-opacity-10"
+            className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 cursor-pointer"
             style={{ 
+              ...style,
               color: item.isDestructive ? theme.error.DEFAULT : theme.typography.primary,
               backgroundColor: item.isLoading ? `${item.isDestructive ? theme.error.DEFAULT : theme.brand.background}10` : 'transparent'
             }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             disabled={item.isLoading}
             role="menuitem"
           >

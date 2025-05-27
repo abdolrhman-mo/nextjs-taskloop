@@ -45,12 +45,12 @@ export default function Page() {
         setUserLoading(true);
         const userData = await get<User>(ENDPOINTS.AUTH.ME.path);
         setUser(userData);
-      } catch (err) {
+    } catch (err) {
         console.error('Failed to fetch user data:', err);
       } finally {
         setUserLoading(false);
-      }
-    };
+    }
+  };
 
     fetchUserData();
   }, [get]);
@@ -60,7 +60,7 @@ export default function Page() {
     const fetchSession = async (isInitialLoad: boolean = false) => {
       try {
         if (isInitialLoad) {
-          setLoading(true);
+        setLoading(true);
         }
         const sessionResponse = await get<Session>(ENDPOINTS.SESSIONS.READ.path(id as string));
         setSession(sessionResponse);
@@ -69,8 +69,8 @@ export default function Page() {
         setError('Failed to load session');
       } finally {
         if (isInitialLoad) {
-          setLoading(false);
-        }
+        setLoading(false);
+      }
       }
     };
 
@@ -95,9 +95,9 @@ export default function Page() {
     };
 
     if (id) {
-      fetchTasks();
-      const intervalId = setInterval(fetchTasks, 5000);
-      return () => clearInterval(intervalId);
+    fetchTasks();
+    const intervalId = setInterval(fetchTasks, 5000);
+    return () => clearInterval(intervalId);
     }
   }, [get, id]);
 
@@ -155,6 +155,24 @@ export default function Page() {
     }
   };
 
+  const handleEditTask = async (taskId: number, newText: string) => {
+    try {
+      const updatedTask = await put<Task>(
+        ENDPOINTS.SESSIONS.TASKS.UPDATE.path(id as string, taskId.toString()), 
+        { text: newText }
+      );
+      setTasks(prevTasks => prevTasks.map(t => 
+        t.id === taskId ? updatedTask : t
+      ));
+    } catch (err) {
+      console.error('Failed to update task', err);
+      setTaskState(prev => ({ 
+        ...prev, 
+        error: 'Failed to update task. Please try again.' 
+      }));
+    }
+  };
+
   // Task filtering by participant
   const participantTasks = (participantId: number) => 
     tasks.filter(task => task.user === participantId);
@@ -173,11 +191,11 @@ export default function Page() {
                 onSessionUpdate={setSession}
               />
             )}
-          </div>
+        </div>
 
           {(loading || userLoading) ? (
             <div className="text-center py-10" style={{color: theme.typography.primary}}>Loading...</div>
-          ) : error ? (
+        ) : error ? (
             <div className="text-center py-10" style={{color: theme.error.DEFAULT}}>{error}</div>
           ) : !session ? (
             <div className="text-center py-10" style={{color: theme.typography.primary}}>No session found.</div>
@@ -196,7 +214,7 @@ export default function Page() {
                   isAdding={taskState.isAddingTask}
                   error={taskState.error}
                 />
-              )}
+                    )}
 
               {/* Task columns using CSS columns */}
               <div className="columns-1 md:columns-2 gap-6 lg:gap-8 [column-fill:_balance]">
@@ -209,6 +227,7 @@ export default function Page() {
                       isColumnOwner={true}
                       onToggleTask={handleToggleTask}
                       onDeleteTask={handleDeleteTask}
+                      onEditTask={handleEditTask}
                       togglingTaskId={taskState.togglingTaskId}
                     />
                   </div>
@@ -223,14 +242,15 @@ export default function Page() {
                       isColumnOwner={false}
                       onToggleTask={handleToggleTask}
                       onDeleteTask={handleDeleteTask}
+                      onEditTask={handleEditTask}
                       togglingTaskId={taskState.togglingTaskId}
                     />
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
+      </div>
       </main>
     </div>
   );

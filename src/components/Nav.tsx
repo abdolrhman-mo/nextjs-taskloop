@@ -8,6 +8,7 @@ import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { DropdownMenu } from './common/DropdownMenu';
+import { useHoverBackground } from '@/hooks/useHoverBackground';
 
 interface User {
   id: number;
@@ -24,6 +25,7 @@ export const Nav = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { get } = useApi();
+  const { handleMouseEnter, handleMouseLeave, style } = useHoverBackground();
 
   // Get username from /auth/me endpoint
   useEffect(() => {
@@ -83,16 +85,16 @@ export const Nav = () => {
   return (
     <>
     <nav 
-      className="py-2 px-4 sm:px-6 lg:px-8 shadow-md fixed top-0 left-0 right-0 z-50"
+      className="py-2 px-4 sm:px-6 lg:px-8 fixed top-0 left-0 right-0 z-50"
       style={{
-        backgroundColor: theme.background.secondary,
-        borderBottom: `1px solid ${theme.border}`
+        backgroundColor: theme.background.primary,
+        // borderBottom: `1px solid ${theme.border}`
       }}
       >
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="max-w-8xl mx-auto flex justify-between items-center">
         <Link 
           href="/" 
-          className="text-2xl sm:text-3xl font-extrabold tracking-tight hover:opacity-80 transition-opacity cursor-pointer"
+          className="text-xl sm:text-xl font-bold tracking-tight cursor-pointer"
           style={{ color: theme.brand.background }}
           >
           TaskLoop
@@ -106,19 +108,21 @@ export const Nav = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-opacity-10 transition-colors duration-200 cursor-pointer"
+                className="flex items-center gap-2 px-3 py-1 rounded-lg transition-colors duration-200 cursor-pointer"
                 style={{
-                  backgroundColor: `${theme.brand.background}20`,
+                  ...style,
                   color: theme.typography.primary 
                 }}
-                >
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
                 <span className="font-medium">{username}</span>
                 <svg 
                   className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"
-                  >
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -133,7 +137,7 @@ export const Nav = () => {
         </div>
       </div>
     </nav>
-    <div className='h-16'></div>
+    <div className='h-14'></div>
     </>
   );
 }; 

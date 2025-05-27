@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHoverBackground } from '@/hooks/useHoverBackground';
 
 interface BackButtonProps {
   href: string;
@@ -8,16 +9,19 @@ interface BackButtonProps {
 
 export function BackButton({ href, className = '' }: BackButtonProps) {
   const { theme } = useTheme();
+  const { handleMouseEnter, handleMouseLeave, style } = useHoverBackground();
 
   return (
     <Link 
       href={href}
-      className={`p-2 rounded-lg hover:bg-opacity-10 transition-all duration-200 cursor-pointer ${className}`}
+      className={`p-2 rounded-lg transition-all duration-200 cursor-pointer ${className}`}
       style={{
-        backgroundColor: `${theme.brand.background}20`,
+        ...style,
         color: theme.brand.background
       }}
       title="Go back"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <svg 
         className="w-5 h-5" 

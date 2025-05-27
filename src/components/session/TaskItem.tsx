@@ -1,146 +1,211 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Task } from '@/types/session';
-import { DropdownMenu } from '@/components/common/DropdownMenu';
+import {
+  CheckCircleIcon,
+  CircleIcon,
+  PencilIcon,
+  TrashIcon
+} from 'lucide-react';
 
 interface TaskItemProps {
   task: Task;
-  isLast: boolean;
   onToggle?: (task: Task) => Promise<void>;
   onDelete?: (taskId: number) => Promise<void>;
+  onEdit?: (taskId: number, newText: string) => Promise<void>;
   isToggling: boolean;
   isColumnOwner: boolean;
 }
 
-export function TaskItem({ task, isLast, onToggle, onDelete, isToggling, isColumnOwner }: TaskItemProps) {
+export function TaskItem({ task, onToggle, onDelete, onEdit, isToggling, isColumnOwner }: TaskItemProps) {
   const { theme } = useTheme();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [editText, setEditText] = useState(task.text);
+  const [isSaving, setIsSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const editBoxRef = useRef<HTMLDivElement>(null);
 
+  // Click-away listener to cancel editing
   useEffect(() => {
+    if (!isEditing) return;
     function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
+      if (
+        editBoxRef.current &&
+        !editBoxRef.current.contains(event.target as Node)
+      ) {
+        setIsEditing(false);
+        setEditText(task.text);
       }
     }
-
-    if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isMenuOpen]);
+  }, [isEditing, task.text]);
 
-  const menuItems = [
-    {
-      label: 'Delete task',
-      icon: (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-        </svg>
-      ),
-      onClick: () => {
-        onDelete?.(task.id);
-        setIsMenuOpen(false);
-      },
-      isDestructive: true
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isDeleting) return;
+    
+    setIsDeleting(true);
+    try {
+      await onDelete?.(task.id);
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+    } finally {
+      setIsDeleting(false);
     }
-  ];
+  };
+
+  const handleEdit = async () => {
+    if (!editText.trim() || editText === task.text) {
+      setIsEditing(false);
+      setEditText(task.text);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await onEdit?.(task.id, editText.trim());
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to edit task:', error);
+      setEditText(task.text);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditText(task.text);
+    }
+  };
+
+  const isChecked = task.is_done;
 
   return (
     <>
-      <div className="p-2 rounded-lg transition-all duration-200 border-transparent">
+      <div 
+        className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+          (isDeleting || isSaving) ? 'opacity-50' : ''
+        } ${
+          // Add extra padding for non-column owners instead of trash icon padding
+          !isColumnOwner ? 'py-3' : ''
+        }`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <div className="flex items-center gap-3">
-          {isColumnOwner ? (
-            <button 
-              onClick={() => onToggle?.(task)}
-              className={`flex-shrink-0 focus:outline-none group ${!isToggling ? 'cursor-pointer' : ''}`}
-              disabled={isToggling}
-            >
-              <div className={`
-                w-5 h-5 rounded border-2 flex items-center justify-center
-                transition-colors duration-200
-                ${!isToggling ? 'cursor-pointer' : ''}
-                ${task.is_done 
-                  ? 'bg-green-500 border-green-500' 
-                  : 'border-gray-400 group-hover:border-gray-300'
-                }
-                ${isToggling ? 'opacity-50' : ''}
-              `}>
-                {isToggling ? (
-                  <svg className="animate-spin h-3 w-3 text-white" viewBox="0 0 24 24">
+          {/* Custom Checkbox using Lucide icons */}
+          <button
+            onClick={() => isColumnOwner && onToggle?.(task)}
+            disabled={isToggling || isDeleting || isEditing || !isColumnOwner}
+            className={`flex-shrink-0 focus:outline-none ${isColumnOwner ? 'cursor-pointer' : 'cursor-default'}`}
+          >
+            {isChecked ? (
+              <CheckCircleIcon className="text-green-500 w-4 h-4" />
+            ) : (
+              <CircleIcon className="text-amber-500 w-4 h-4" />
+            )}
+          </button>
+          
+          {/* Edit input */}
+          {isEditing ? (
+            <div ref={editBoxRef} className="flex-grow flex items-center gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={editText}
+                onChange={(e) => setEditText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="flex-grow px-2 py-1 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  backgroundColor: theme.background.secondary,
+                  color: theme.typography.primary,
+                  borderColor: theme.border
+                }}
+                disabled={isSaving}
+                autoFocus
+              />
+              <button
+                onClick={handleEdit}
+                disabled={isSaving || !editText.trim() || editText === task.text}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200
+                  ${(isSaving || !editText.trim() || editText === task.text) 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'hover:opacity-90 cursor-pointer'}`}
+                style={{
+                  backgroundColor: theme.brand.background,
+                  color: theme.brand.text
+                }}
+              >
+                {isSaving ? (
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                ) : task.is_done && (
-                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
+                ) : (
+                  'Save'
                 )}
-              </div>
-            </button>
-          ) : (
-            <div className="flex-shrink-0">
-              <div className={`
-                w-5 h-5 rounded border-2 flex items-center justify-center
-                ${task.is_done 
-                  ? 'bg-green-500 border-green-500' 
-                  : 'border-gray-400'
-                }
-              `}>
-                {task.is_done && (
-                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                )}
-              </div>
-            </div>
-          )}
-          
-          <span className={`flex-grow ${task.is_done ? 'line-through' : ''} ${isToggling ? 'opacity-50' : ''}`} 
-            style={{
-              color: task.is_done ? theme.typography.secondary : theme.typography.primary
-            }}>
-            {task.text}
-          </span>
-          
-          {isColumnOwner && (
-            <div className="flex-shrink-0 relative task-menu" ref={menuRef}>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsMenuOpen(!isMenuOpen);
-                }}
-                className="p-1 rounded-md transition-colors duration-200 cursor-pointer"
-                style={{
-                  color: theme.typography.secondary,
-                  backgroundColor: isMenuOpen ? `${theme.background.tertiary}40` : 'transparent'
-                }}
-                title="Task options"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                </svg>
               </button>
-              
-              <DropdownMenu 
-                items={menuItems}
-                isOpen={isMenuOpen}
-                className="mt-1"
-              />
             </div>
+          ) : (
+            <>
+              <span 
+                className={`flex-grow ${task.is_done ? 'line-through' : ''} ${(isToggling || isDeleting || isSaving) ? 'opacity-50' : ''}`} 
+                style={{
+                  color: task.is_done ? theme.typography.secondary : theme.typography.primary
+                }}
+              >
+                {task.text}
+              </span>
+              {isColumnOwner && !isEditing && (
+                <div className="flex items-center gap-1">
+                  <div 
+                    className={`w-8 h-8 flex items-center justify-center transition-all duration-200 ease-in-out ${
+                      isHovered ? 'opacity-100 translate-x-0' : 'opacity-0'
+                    }`}
+                  >
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="p-1 text-gray-600 hover:text-indigo-600 cursor-pointer"
+                      title="Edit task"
+                      disabled={isDeleting || isSaving}
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div 
+                    className={`w-8 h-8 flex items-center justify-center transition-all duration-200 ease-in-out ${
+                      isHovered ? 'opacity-100 translate-x-0' : 'opacity-0'
+                    }`}
+                  >
+                    <button
+                      onClick={handleDelete}
+                      className="p-1 text-gray-600 hover:text-red-600 cursor-pointer"
+                      title="Delete task"
+                      disabled={isDeleting || isSaving}
+                    >
+                      {isDeleting ? (
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                      ) : (
+                        <TrashIcon className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
-      {!isLast && (
-        <div 
-          className="h-px my-2 opacity-20" 
-          style={{ backgroundColor: theme.border }}
-        />
-      )}
     </>
   );
-} 
+}

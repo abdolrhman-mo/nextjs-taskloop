@@ -1,18 +1,22 @@
 'use client';
 
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHoverBackground } from '@/hooks/useHoverBackground';
 
 export const ThemeToggle = () => {
   const { isDarkMode, toggleTheme, theme } = useTheme();
+  const { handleMouseEnter, handleMouseLeave, style } = useHoverBackground();
 
   return (
     <button 
       onClick={toggleTheme}
-      className="p-2 rounded-lg transition-colors duration-200 focus:outline-none cursor-pointer"
+      className="p-1 rounded-lg transition-colors duration-200 focus:outline-none cursor-pointer"
       style={{
-        backgroundColor: `${theme.brand.background}20`,
+        ...style,
         color: theme.brand.background,
       }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {isDarkMode ? (

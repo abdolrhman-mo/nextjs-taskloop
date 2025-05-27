@@ -101,27 +101,27 @@ export default function CreateSessionPage() {
                 >
                   Session Name
                 </label>
-                <input
+            <input
                   id="sessionName"
-                  type="text"
+              type="text"
                   placeholder="Enter a name for your session"
                   className="w-full px-5 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-                  style={{
-                    borderColor: theme.border,
-                    color: theme.typography.primary,
+              style={{
+                borderColor: theme.border,
+                color: theme.typography.primary,
                     backgroundColor: theme.background.primary,
                     '--tw-ring-offset-color': theme.background.secondary,
                     '--tw-ring-color': `${theme.brand.background}40`
                   } as React.CSSProperties}
-                  value={sessionName}
-                  onChange={(e) => setSessionName(e.target.value)}
-                  maxLength={50}
-                  autoFocus
+              value={sessionName}
+              onChange={(e) => setSessionName(e.target.value)}
+              maxLength={50}
+              autoFocus
                   disabled={isCreating}
-                />
+            />
               </div>
 
-              {error && (
+            {error && (
                 <div 
                   className="p-4 rounded-lg transition-colors duration-200" 
                   style={{
@@ -130,31 +130,31 @@ export default function CreateSessionPage() {
                     border: `1px solid ${theme.error.DEFAULT}40`
                   }}
                 >
-                  {error}
+                {error}
                 </div>
-              )}
+            )}
 
               <div className="flex justify-end gap-3">
                 <Link
                   href="/"
-                  className="px-5 py-2.5 rounded-lg cursor-pointer hover:opacity-90 transition-all duration-200"
-                  style={{
-                    backgroundColor: theme.background.primary,
-                    color: theme.typography.primary,
-                    border: `1px solid ${theme.border}`
-                  }}
-                >
-                  Cancel
+                className="px-5 py-2.5 rounded-lg cursor-pointer hover:opacity-90 transition-all duration-200"
+                style={{
+                  backgroundColor: theme.background.primary,
+                  color: theme.typography.primary,
+                  border: `1px solid ${theme.border}`
+                }}
+              >
+                Cancel
                 </Link>
-                <button
+              <button
                   type="submit"
                   disabled={!sessionName.trim() || isCreating}
                   className="px-5 py-2.5 rounded-lg cursor-pointer hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  style={{
-                    backgroundColor: theme.brand.background,
-                    color: theme.brand.text
-                  }}
-                >
+                style={{
+                  backgroundColor: theme.brand.background,
+                  color: theme.brand.text
+                }}
+              >
                   {isCreating && (
                     <div 
                       className="animate-spin rounded-full h-4 w-4 border-2" 
@@ -165,8 +165,8 @@ export default function CreateSessionPage() {
                     />
                   )}
                   {isCreating ? 'Creating session...' : 'Create Session'}
-                </button>
-              </div>
+              </button>
+            </div>
             </form>
           </div>
         </div>

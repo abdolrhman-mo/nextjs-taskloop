@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHoverBackground } from '@/hooks/useHoverBackground';
 import { Session, User } from '@/types/session';
 
 interface SessionMenuProps {
@@ -27,6 +28,7 @@ export const SessionMenu = ({
   const [isOpen, setIsOpen] = useState(false);
   const isCreator = user && session.creator === user.id;
   const isParticipant = user && session.participants.some(p => p.id === user.id);
+  const { handleMouseEnter, handleMouseLeave, style } = useHoverBackground();
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -69,11 +71,13 @@ export const SessionMenu = ({
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className="absolute top-3 right-3 p-1.5 rounded-lg hover:bg-opacity-10 transition-colors duration-200 session-menu cursor-pointer"
+        className="absolute top-3 right-3 p-1.5 rounded-lg transition-colors duration-200 session-menu cursor-pointer"
         style={{ 
-          backgroundColor: isOpen ? `${theme.brand.background}30` : `${theme.brand.background}20`,
-          color: theme.typography.primary 
+          ...style,
+          color: theme.typography.primary
         }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         disabled={isLeaving || isDeleting}
       >
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

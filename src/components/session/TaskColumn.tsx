@@ -1,6 +1,7 @@
 import { Task } from '@/types/session';
 import { useTheme } from '@/contexts/ThemeContext';
 import { TaskItem } from './TaskItem';
+import { CheckCircleIcon, CircleIcon } from 'lucide-react';
 
 interface TaskColumnProps {
   title: string;
@@ -8,6 +9,7 @@ interface TaskColumnProps {
   isColumnOwner: boolean;
   onToggleTask: (task: Task) => Promise<void>;
   onDeleteTask: (taskId: number) => Promise<void>;
+  onEditTask: (taskId: number, newText: string) => Promise<void>;
   togglingTaskId: number | null;
 }
 
@@ -17,6 +19,7 @@ export function TaskColumn({
   isColumnOwner,
   onToggleTask,
   onDeleteTask,
+  onEditTask,
   togglingTaskId,
 }: TaskColumnProps) {
   const { theme } = useTheme();
@@ -29,21 +32,20 @@ export function TaskColumn({
   const completedTasks = sortedTasks.filter(task => task.is_done);
 
   return (
-    <div className="rounded-lg shadow-lg overflow-hidden h-fit" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
+    <div className="rounded-lg shadow- mdoverflow-hidden h-fit" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
       {/* Header section with user name */}
       <div className="p-4" style={{backgroundColor: `${theme.brand.background}10`}}>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-8 rounded-full" style={{backgroundColor: theme.brand.background}}></div>
-          <h3 className="text-2xl font-semibold" style={{color: theme.typography.primary}}>{title}</h3>
+          <h3 className="text-xl font-semibold" style={{color: theme.typography.primary}}>{title}</h3>
         </div>
       </div>
 
       {/* Task lists section */}
-      <div className="p-6 space-y-6 min-h-0">
+      <div className="p-6 space-y-4 min-h-0">
         <div>
-          <h4 className="text-lg font-medium mb-4 flex items-center gap-2" style={{color: theme.typography.primary}}>
-            <span className="w-2 h-2 rounded-full" style={{backgroundColor: theme.brand.background}}></span>
-            Todo
+          <h4 className="text-lg font-semibold mb-3 flex items-center gap-2" style={{color: theme.typography.primary}}>
+            <CircleIcon className="text-amber-500 w-4 h-4" />
+            To Do
             <span className="text-sm px-2 py-0.5 rounded-full" style={{
               backgroundColor: `${theme.brand.background}20`,
               color: theme.brand.background
@@ -51,21 +53,26 @@ export function TaskColumn({
               {activeTasks.length}
             </span>
           </h4>
-          <div className="space-y-2">
+          <div>
             {activeTasks.length > 0 ? (
-              activeTasks.map((task, index, array) => (
-                <TaskItem
+              activeTasks.map((task) => (
+                <div
                   key={task.id}
-                  task={task}
-                  isLast={index === array.length - 1}
-                  onToggle={isColumnOwner ? onToggleTask : undefined}
-                  onDelete={isColumnOwner ? onDeleteTask : undefined}
-                  isToggling={togglingTaskId === task.id}
-                  isColumnOwner={isColumnOwner}
-                />
+                  className="rounded-lg mb-1"
+                  style={{ backgroundColor: theme.background.todo_task }}
+                >
+                  <TaskItem
+                    task={task}
+                    onToggle={isColumnOwner ? onToggleTask : undefined}
+                    onDelete={isColumnOwner ? onDeleteTask : undefined}
+                    onEdit={isColumnOwner ? onEditTask : undefined}
+                    isToggling={togglingTaskId === task.id}
+                    isColumnOwner={isColumnOwner}
+                  />
+                </div>
               ))
             ) : (
-              <p className="italic text-center py-4 bg-opacity-50 rounded-lg" style={{
+              <p className="italic text-center py-3 bg-opacity-50 rounded-lg" style={{
                 backgroundColor: theme.background.primary,
                 color: theme.typography.secondary
               }}>
@@ -75,9 +82,9 @@ export function TaskColumn({
           </div>
         </div>
 
-        <div className="pt-6 border-t" style={{borderColor: theme.border}}>
-          <h4 className="text-lg font-medium mb-4 flex items-center gap-2" style={{color: theme.typography.primary}}>
-            <span className="w-2 h-2 rounded-full" style={{backgroundColor: theme.brand.background}}></span>
+        <div className="pt-4 border-t" style={{borderColor: theme.border}}>
+          <h4 className="text-lg font-semibold mb-3 flex items-center gap-2" style={{color: theme.typography.primary}}>
+            <CheckCircleIcon className="text-green-500 w-4 h-4" />
             Done
             <span className="text-sm px-2 py-0.5 rounded-full" style={{
               backgroundColor: `${theme.brand.background}20`,
@@ -86,21 +93,26 @@ export function TaskColumn({
               {completedTasks.length}
             </span>
           </h4>
-          <div className="space-y-2">
+          <div>
             {completedTasks.length > 0 ? (
-              completedTasks.map((task, index, array) => (
-                <TaskItem
+              completedTasks.map((task) => (
+                <div
                   key={task.id}
-                  task={task}
-                  isLast={index === array.length - 1}
-                  onToggle={isColumnOwner ? onToggleTask : undefined}
-                  onDelete={isColumnOwner ? onDeleteTask : undefined}
-                  isToggling={togglingTaskId === task.id}
-                  isColumnOwner={isColumnOwner}
-                />
+                  className="rounded-lg mb-1"
+                  style={{ backgroundColor: theme.background.done_task }}
+                >
+                  <TaskItem
+                    task={task}
+                    onToggle={isColumnOwner ? onToggleTask : undefined}
+                    onDelete={isColumnOwner ? onDeleteTask : undefined}
+                    onEdit={isColumnOwner ? onEditTask : undefined}
+                    isToggling={togglingTaskId === task.id}
+                    isColumnOwner={isColumnOwner}
+                  />
+                </div>
               ))
             ) : (
-              <p className="italic text-center py-4 bg-opacity-50 rounded-lg" style={{
+              <p className="italic text-center py-3 bg-opacity-50 rounded-lg" style={{
                 backgroundColor: theme.background.primary,
                 color: theme.typography.secondary
               }}>
