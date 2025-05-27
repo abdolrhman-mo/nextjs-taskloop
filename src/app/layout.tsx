@@ -2,6 +2,9 @@ import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ClientLayout from './client-layout';
 import { metadata } from './metadata';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export { metadata };
 
@@ -12,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans">
+      <body className={inter.className}>
         <ThemeProvider>
           <ClientLayout>
             {children}
