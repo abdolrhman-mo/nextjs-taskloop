@@ -98,19 +98,19 @@ export const SessionCard = ({
       
       <Link 
         href={`/session/${session.uuid}`}
-        className={`block w-full text-center py-2.5 mt-4 rounded-md text-sm font-semibold transition-colors duration-200 active:scale-95 cursor-pointer`}
+        className={`block w-full text-center py-2.5 mt-4 rounded-md text-sm font-semibold transition-all duration-200 active:scale-95 cursor-pointer`}
         style={{
-          backgroundColor: theme.background.tertiary,
+          backgroundColor: `${theme.brand.background}20`,
           color: theme.typography.primary,
         }}
         onMouseEnter={e => {
-          (e.currentTarget as HTMLElement).style.backgroundColor = theme.background.fourth;
+          (e.currentTarget as HTMLElement).style.backgroundColor = `${theme.brand.background}30`;
         }}
         onMouseLeave={e => {
-          (e.currentTarget as HTMLElement).style.backgroundColor = theme.background.tertiary;
+          (e.currentTarget as HTMLElement).style.backgroundColor = `${theme.brand.background}20`;
         }}
       >
-        {isParticipant ? 'Join' : 'View Session'}
+        Join Session
       </Link>
     </div>
   );
