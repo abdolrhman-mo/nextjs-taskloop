@@ -46,12 +46,12 @@ export function TaskColumn({
           <h4 className="text-lg font-semibold mb-3 flex items-center gap-2" style={{color: theme.typography.primary}}>
             <CircleIcon className="text-amber-500 w-4 h-4" />
             To Do
-            <span className="text-sm px-2 py-0.5 rounded-full" style={{
+            {/* <span className="text-sm px-2 py-0.5 rounded-full" style={{
               backgroundColor: `${theme.brand.background}20`,
-              color: theme.brand.background
+              color: theme.typography.primary
             }}>
               {activeTasks.length}
-            </span>
+            </span> */}
           </h4>
           <div>
             {activeTasks.length > 0 ? (
@@ -86,12 +86,12 @@ export function TaskColumn({
           <h4 className="text-lg font-semibold mb-3 flex items-center gap-2" style={{color: theme.typography.primary}}>
             <CheckCircleIcon className="text-green-500 w-4 h-4" />
             Done
-            <span className="text-sm px-2 py-0.5 rounded-full" style={{
+            {/* <span className="text-sm px-2 py-0.5 rounded-full" style={{
               backgroundColor: `${theme.brand.background}20`,
-              color: theme.brand.background
+              color: theme.typography.primary
             }}>
               {completedTasks.length}
-            </span>
+            </span> */}
           </h4>
           <div>
             {completedTasks.length > 0 ? (
