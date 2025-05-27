@@ -41,10 +41,10 @@ export const SessionCard = ({
   return (
     <div
       className={`
-        block rounded-lg overflow-hidden transition-all duration-300 group relative
+        block rounded-lg overflow-hidden transition-all duration-300 group relative border shadow-sm
         ${isFeatured 
-          ? `p-6 shadow-xl border-2` 
-          : `p-5 shadow-lg border`
+          ? `p-6` 
+          : `p-5`
         }
         ${(isLeaving || isDeleting) ? 'opacity-50 pointer-events-none' : ''}
       `}
@@ -98,13 +98,19 @@ export const SessionCard = ({
       
       <Link 
         href={`/session/${session.uuid}`}
-        className={`block w-full text-center py-2.5 mt-4 rounded-md text-sm font-semibold transition-all duration-300 hover:opacity-90 cursor-pointer`}
+        className={`block w-full text-center py-2.5 mt-4 rounded-md text-sm font-semibold transition-colors duration-200 active:scale-95 cursor-pointer`}
         style={{
           backgroundColor: theme.background.tertiary,
           color: theme.typography.primary,
         }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.backgroundColor = theme.background.fourth;
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.backgroundColor = theme.background.tertiary;
+        }}
       >
-        {isParticipant ? 'Join Session' : 'View Session'}
+        {isParticipant ? 'Join' : 'View Session'}
       </Link>
     </div>
   );

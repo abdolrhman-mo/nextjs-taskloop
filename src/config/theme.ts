@@ -1,30 +1,5 @@
 // Theme configuration for consistent color palette
 
-// Dark theme (commented out)
-
-// export const theme = {
-//   brand: {
-//     text: '#000',
-//     background: '#fff',
-//     hover: '#5b51d8',
-//   },
-//   typography: {
-//     primary: '#fff',
-//     secondary: '#B3B3B3',
-//   },
-//   background: {
-//     primary: '#191A1A',
-//     secondary: '#202222',
-//     tertiary: '#434343',
-//   },
-//   border: '#4C4C4C',
-//   hover: '#fff',
-//   error: {
-//     DEFAULT: '#ef4444',
-//     text: '#ffffff'
-//   }
-// };
-
 
 // Light theme (default)
 export const lightTheme = {
@@ -41,6 +16,7 @@ export const lightTheme = {
     primary: '#fff', // Slate-100
     secondary: '#ffffff', // White
     tertiary: '#e2e8f0', // Slate-200
+    fourth: '#cad5e2', // Slate-400
     todo_task: '#fff7e6', // Amber-50
     done_task: '#e6fff7', // Slate-50
   },
@@ -66,6 +42,7 @@ export const darkTheme = {
     primary: '#0f172a', // Slate-900
     secondary: '#1e293b', // Slate-800
     tertiary: '#334155', // Slate-700
+    fourth: '#45556c', // Slate-600
     todo_task: '#0f172a', // Slate-900
     done_task: '#0f172a', // Slate-900
   },
