@@ -9,6 +9,14 @@ import { ENDPOINTS } from '@/config/endpoints';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { DropdownMenu } from './common/DropdownMenu';
 import { useHoverBackground } from '@/hooks/useHoverBackground';
+import { Jua } from 'next/font/google';
+import { Repeat } from 'lucide-react';
+
+const jua = Jua({ 
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 interface User {
   id: number;
@@ -94,10 +102,16 @@ export const Nav = () => {
       <div className="max-w-8xl mx-auto flex justify-between items-center">
         <Link 
           href="/" 
-          className="text-xl sm:text-xl font-bold tracking-tight cursor-pointer"
+          className={`text-xl sm:text-2xl font-bold tracking-tight cursor-pointer ${jua.className} flex items-center justify-center gap-1 h-10`}
           style={{ color: theme.brand.background }}
           >
-          TaskLoop
+          <Repeat className="w-6 h-6" />
+          <span 
+            style={{ color: theme.typography.primary }}
+            className="top-0 md:translate-y-[2px]"
+          >
+            TaskLoop
+          </span>
         </Link>
 
         <div className="flex items-center gap-4">
