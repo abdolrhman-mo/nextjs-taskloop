@@ -4,20 +4,19 @@ import { useHoverBackground } from '@/hooks/useHoverBackground';
 
 interface BackButtonProps {
   href: string;
-  className?: string;
 }
 
-export function BackButton({ href, className = '' }: BackButtonProps) {
+export function BackButton({ href }: BackButtonProps) {
   const { theme } = useTheme();
   const { handleMouseEnter, handleMouseLeave, style } = useHoverBackground();
 
   return (
     <Link 
       href={href}
-      className={`p-2 rounded-lg transition-all duration-200 cursor-pointer ${className}`}
+      className={`p-2 rounded-lg transition-all duration-200 cursor-pointer mt-4 sm:mt-0 flex items-center gap-2`}
       style={{
         ...style,
-        color: theme.brand.background
+        color: theme.typography.primary
       }}
       title="Go back"
       onMouseEnter={handleMouseEnter}
@@ -36,6 +35,7 @@ export function BackButton({ href, className = '' }: BackButtonProps) {
           d="M10 19l-7-7m0 0l7-7m-7 7h18" 
         />
       </svg>
+        Back to Home
     </Link>
   );
 } 

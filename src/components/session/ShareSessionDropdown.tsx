@@ -1,30 +1,19 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { DropdownPanel } from '@/components/common/DropdownPanel';
 
 interface ShareSessionDropdownProps {
   onClose: () => void;
   sessionId: string;
+  triggerRef?: React.RefObject<HTMLElement | HTMLButtonElement>;
 }
 
-export function ShareSessionDropdown({ onClose, sessionId }: ShareSessionDropdownProps) {
+export function ShareSessionDropdown({ onClose, sessionId, triggerRef }: ShareSessionDropdownProps) {
   const { theme } = useTheme();
   const [copyState, setCopyState] = useState({
     isCopied: false,
     error: null as string | null
   });
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onClose]);
 
   const handleCopyLink = async () => {
     try {
@@ -38,30 +27,12 @@ export function ShareSessionDropdown({ onClose, sessionId }: ShareSessionDropdow
   };
 
   return (
-    <div
-      ref={dropdownRef}
-      className="absolute right-0 mt-2 z-50 rounded-lg shadow-2xl overflow-hidden"
-      style={{
-        minWidth: 400,
-        width: 500,
-        maxWidth: 'calc(100vw - 2rem)',
-        backgroundColor: theme.background.primary,
-        boxShadow: '0 6px 24px rgba(0, 0, 0, 0.1)'
-      }}
+    <DropdownPanel
+      onClose={onClose}
+      title="Share Session"
+      description="Copy and share this link with your friends to let them join your session"
+      triggerRef={triggerRef}
     >
-      {/* Header */}
-      <div className="p-4 border-b" style={{ borderColor: theme.border }}>
-        <h3 className="text-lg font-semibold" style={{ color: theme.typography.primary }}>
-          Share Session
-        </h3>
-      </div>
-      {/* Instructions */}
-      <div className="p-6">
-        <p className="text-sm text-center" style={{ color: theme.typography.secondary }}>
-          Copy and share this link with your friends to let them join your session
-        </p>
-      </div>
-      {/* Copy Link Section */}
       <div className="p-4 border-t" style={{ borderColor: theme.border }}>
         <button
           onClick={handleCopyLink}
@@ -93,6 +64,6 @@ export function ShareSessionDropdown({ onClose, sessionId }: ShareSessionDropdow
           </p>
         )}
       </div>
-    </div>
+    </DropdownPanel>
   );
 } 

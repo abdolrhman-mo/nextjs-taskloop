@@ -24,7 +24,7 @@ export function UserTaskInput({
     <div className={`${isFullWidth ? 'md:col-span-2' : ''} my-2`}>
       <div className="max-w-2xl mx-auto">
         <div 
-          className="p-4 py-6 rounded-lg shadow-sm transition-colors duration-200" 
+          className="p-4 py-6 rounded-lg transition-colors duration-200" 
           style={{
             backgroundColor: theme.background.secondary, 
             border: `1px solid ${theme.border}`

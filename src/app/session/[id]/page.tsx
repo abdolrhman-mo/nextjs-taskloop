@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Nav } from '@/components/Nav';
 import { SessionHeader } from '@/components/session/SessionHeader';
@@ -11,6 +11,8 @@ import { TaskColumn } from '@/components/session/TaskColumn';
 import { Session, Task, User } from '@/types/session';
 import { UserTaskInput } from '@/components/session/UserTaskInput';
 import { BackButton } from '@/components/common/BackButton';
+import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
+import { SettingsMenu } from '@/components/session/SettingsMenu';
 
 export default function Page() {
   const { theme } = useTheme();
@@ -31,6 +33,7 @@ export default function Page() {
   // API and routing hooks
   const { get, put, post, delete: deleteRequest } = useApi();
   const { id } = useParams();
+  const router = useRouter();
 
   // Session participant checks
   // const isCreator = user && session && user.id === session.creator;
@@ -177,32 +180,71 @@ export default function Page() {
   const participantTasks = (participantId: number) => 
     tasks.filter(task => task.user === participantId);
 
+  const handleLeaveSession = async () => {
+    if (!session) return;
+    
+    try {
+      await post(ENDPOINTS.SESSIONS.LEAVE.path(session.uuid));
+      router.push('/');
+    } catch (err) {
+      console.error('Failed to leave study room:', err);
+      setError('Failed to leave study room. Please try again.');
+    }
+  };
+
+  const handleDeleteSession = async () => {
+    if (!session) return;
+    
+    try {
+      await deleteRequest(ENDPOINTS.SESSIONS.MANAGE.DELETE.path(session.uuid));
+      router.push('/');
+    } catch (err) {
+      console.error('Failed to delete study room:', err);
+      setError('Failed to delete study room. Please try again.');
+    }
+  };
+
   return (
     <div className="min-h-screen" style={{backgroundColor: theme.background.primary}}>
-      <Nav />
+      <Nav>
+        {session && isParticipant && (
+            <SessionHeader
+              session={session}
+              isSessionParticipant={isParticipant}
+              onSessionUpdate={setSession}
+            />
+        )}
+      </Nav>
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
-            <BackButton href="/" className="mt-4 sm:mt-0" />
+          <div className="flex items-center gap-3 mb-6 justify-between">
+            <BackButton href="/" />
             {session && isParticipant && (
-              <SessionHeader
-                session={session}
-                isSessionParticipant={isParticipant}
-                onSessionUpdate={setSession}
-              />
+              <div className="flex-shrink-0 flex items-center gap-2">
+                <SettingsMenu 
+                  sessionId={session.uuid} 
+                  session={session}
+                  isCreator={user && session.creator === user.id}
+                  isParticipant={isParticipant}
+                  onSessionUpdate={setSession}
+                  onSessionLeave={handleLeaveSession}
+                  onSessionDelete={handleDeleteSession}
+                />
+                <ShareSessionMenu sessionId={session.uuid} />
+              </div>
             )}
-        </div>
+          </div>
 
           {(loading || userLoading) ? (
             <div className="text-center py-10" style={{color: theme.typography.primary}}>Loading...</div>
         ) : error ? (
             <div className="text-center py-10" style={{color: theme.error.DEFAULT}}>{error}</div>
           ) : !session ? (
-            <div className="text-center py-10" style={{color: theme.typography.primary}}>No session found.</div>
+            <div className="text-center py-10" style={{color: theme.typography.primary}}>No study room found.</div>
           ) : !user ? (
-            <div className="text-center py-10" style={{color: theme.typography.primary}}>Please log in to view this session.</div>
+            <div className="text-center py-10" style={{color: theme.typography.primary}}>Please log in to view this study room.</div>
           ) : !isParticipant ? (
-            <div className="text-center py-10" style={{color: theme.typography.primary}}>You are not a participant in this session.</div>
+            <div className="text-center py-10" style={{color: theme.typography.primary}}>You are not a participant in this study room.</div>
           ) : (
             <div className="flex flex-col gap-6 lg:gap-8">
               {/* Task input always at top */}

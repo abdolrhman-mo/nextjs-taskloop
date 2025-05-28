@@ -24,12 +24,18 @@ export function SessionNameEditForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2 mb-1">
+    <form onSubmit={handleSubmit} className="flex items-center gap-[7px]">
+      <span 
+        className="text-3xl sm:text-4xl font-extrabold tracking-tight"
+        style={{ color: theme.typography.secondary }}
+      >
+        Study Room: 
+      </span>
       <input
         type="text"
         value={editedName}
         onChange={(e) => setEditedName(e.target.value)}
-        className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-transparent border-b-2 focus:outline-none focus:border-blue-500 transition-colors duration-200 pb-1"
+        className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-transparent border-b-2 focus:outline-none focus:border-blue-500 transition-colors duration-200"
         style={{
           color: theme.typography.primary,
           borderColor: theme.border

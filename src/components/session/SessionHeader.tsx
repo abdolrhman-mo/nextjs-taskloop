@@ -5,7 +5,6 @@ import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { SessionNameEditForm } from './SessionNameEditForm';
 import { EditSessionButton } from './EditSessionButton';
-import { ShareSessionMenu } from './ShareSessionMenu';
 
 interface SessionHeaderProps {
   session: Session;
@@ -44,8 +43,8 @@ export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }
   };
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between gap-4">
+    <div className="w-fit flex">
+      <div className="flex items-center justify-between gap-4 w-full">
         <div className="flex-grow">
           {editState.isEditing ? (
             <SessionNameEditForm
@@ -58,21 +57,21 @@ export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }
             />
           ) : (
             <div className="flex items-center gap-3">
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight" 
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight"
                 style={{color: theme.typography.primary}}
               >
-                {session.name}
-            </h2>
-            {isSessionParticipant && (
+                <span style={{ color: theme.typography.secondary }}>Study Room: </span>
+                <span className='inline-block'>
+                  {session.name}
+                </span>
+              </h2>
+              {/* {isSessionParticipant && (
                 <EditSessionButton
                   onClick={() => setEditState(prev => ({ ...prev, isEditing: true }))}
                 />
-              )}
+              )} */}
             </div>
           )}
-        </div>
-        <div className="flex-shrink-0">
-          <ShareSessionMenu sessionId={session.uuid} />
         </div>
       </div>
       <div className="mt-2">

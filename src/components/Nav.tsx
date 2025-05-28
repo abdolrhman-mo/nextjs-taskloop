@@ -26,7 +26,11 @@ interface User {
   last_name: string;
 }
 
-export const Nav = () => {
+interface NavProps {
+  children?: React.ReactNode;
+}
+
+export const Nav = ({ children }: NavProps) => {
   const { theme } = useTheme();
   const [username, setUsername] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -93,27 +97,43 @@ export const Nav = () => {
   return (
     <>
     <nav 
-      className="py-2 px-4 sm:px-6 lg:px-8 fixed top-0 left-0 right-0 z-50"
+      className="py-4 px-4 sm:px-6 lg:px-8 fixed top-0 left-0 right-0 z-50"
       style={{
         backgroundColor: theme.background.primary,
         // borderBottom: `1px solid ${theme.border}`
       }}
       >
       <div className="max-w-8xl mx-auto flex justify-between items-center">
-        <Link 
-          href="/" 
-          className={`text-xl sm:text-2xl font-bold tracking-tight cursor-pointer ${jua.className} flex items-center justify-center gap-1 h-10`}
-          style={{ color: theme.brand.background }}
-          >
-          <Repeat className="w-6 h-6" />
-          <span 
-            style={{ color: theme.typography.primary }}
-            className="top-0 md:translate-y-[2px]"
-          >
-            TaskLoop
-          </span>
-        </Link>
+        {/* Left section - Logo */}
+        <div className="flex-shrink-0">
+          <Link 
+            href="/" 
+            className={`text-xl sm:text-2xl font-bold tracking-tight cursor-pointer ${jua.className} flex items-center justify-center gap-1 h-10`}
+            style={{ color: theme.brand.background }}
+            >
+            <Repeat className="w-6 h-6" />
+            <span 
+              style={{ color: theme.typography.primary }}
+              className="top-0 md:translate-y-[2px]"
+            >
+              TaskLoop
+            </span>
+          </Link>
+        </div>
 
+        {/* Middle section - Optional children */}
+        {children && (
+          <div 
+            className="flex-1 flex justify-center items-center px-4"
+            style={{
+              color: theme.typography.primary
+            }}
+          >
+            {children}
+          </div>
+        )}
+
+        {/* Right section - User controls */}
         <div className="flex items-center gap-4">
           <ThemeToggle />
           

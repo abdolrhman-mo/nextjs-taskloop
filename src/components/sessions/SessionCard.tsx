@@ -110,7 +110,7 @@ export const SessionCard = ({
           (e.currentTarget as HTMLElement).style.backgroundColor = `${theme.brand.background}20`;
         }}
       >
-        Join Session
+        Join Room
       </Link>
     </div>
   );

@@ -10,7 +10,7 @@ export const lightTheme = {
   },
   typography: {
     primary: '#334155', // Slate-700
-    secondary: '#94a3b8', // Slate-400
+    secondary: '#45556c', // Slate-400
   },
   background: {
     primary: '#fff', // Slate-100
@@ -21,7 +21,7 @@ export const lightTheme = {
     done_task: '#e6fff7', // Slate-50
   },
   border: '#e2e8f0', // Slate-200
-  hover: '#F7F3FE', // Light Violet
+  hover: '#D6EDF8',
   error: {
     DEFAULT: '#dc2626', // Red-600
     text: '#ffffff'

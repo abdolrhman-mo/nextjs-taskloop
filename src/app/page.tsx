@@ -70,10 +70,10 @@ export default function Home() {
       await post(ENDPOINTS.SESSIONS.LEAVE.path(sessionId));
       setSessions(prevSessions => prevSessions.filter(s => s.uuid !== sessionId));
     } catch (err) {
-      console.error('Failed to leave session:', err);
+      console.error('Failed to leave study room:', err);
       setLeaveState(prev => ({
         ...prev,
-        error: 'Failed to leave session. Please try again.'
+        error: 'Failed to leave study room. Please try again.'
       }));
     } finally {
       setTimeout(() => {
@@ -100,10 +100,10 @@ export default function Home() {
       await deleteRequest(ENDPOINTS.SESSIONS.MANAGE.DELETE.path(sessionId));
       setSessions(prevSessions => prevSessions.filter(s => s.uuid !== sessionId));
     } catch (err) {
-      console.error('Failed to delete session:', err);
+      console.error('Failed to delete study room:', err);
       setDeleteState(prev => ({
         ...prev,
-        error: 'Failed to delete session. Please try again.'
+        error: 'Failed to delete study room. Please try again.'
       }));
     } finally {
       setTimeout(() => {
@@ -124,7 +124,7 @@ export default function Home() {
         setSessions(data); 
       } catch (err) {
         console.error(err);
-        setError('Failed to load sessions. Please try refreshing the page.');
+        setError('Failed to load study rooms. Please try refreshing the page.');
       } finally {
         setLoading(false);
       }
@@ -144,7 +144,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-8 py-4">
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4 sm:mb-0" style={{color: theme.typography.primary}}>
-              Active Sessions
+              Study Rooms
             </h1>
             <Link 
               href="/session/create"
@@ -154,7 +154,7 @@ export default function Home() {
               }}
               className="px-6 py-3 rounded-lg text-base font-medium hover:opacity-80 transition-opacity duration-200"
             >
-              Create New Session
+              Start Study Room
             </Link>
           </div>
 
