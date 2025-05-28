@@ -15,6 +15,15 @@ import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
 import { SettingsMenu } from '@/components/session/SettingsMenu';
 import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
 
+interface ParticipantWithStats {
+  id: number;
+  username: string;
+  totalTasks: number;
+  completedTasks: number;
+  completionPercentage: number;
+  position: number;
+}
+
 export default function Page() {
   const { theme } = useTheme();
   // State management
@@ -31,6 +40,7 @@ export default function Page() {
     isAddingTask: false
   });
   const [taskSortOrder, setTaskSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [showRankings, setShowRankings] = useState(true);
 
   // API and routing hooks
   const { get, put, post, delete: deleteRequest } = useApi();
@@ -38,11 +48,9 @@ export default function Page() {
   const router = useRouter();
 
   // Session participant checks
-  // const isCreator = user && session && user.id === session.creator;
   const isParticipant = user && session && session.participants.some(p => p.id === user.id);
   const currentParticipant = user && session ? session.participants.find(p => p.id === user.id) : null;
-  const otherParticipants = session ? session.participants.filter(p => p.id !== user?.id) : [];
-      
+
   // Fetch current user data
   useEffect(() => {
     const fetchUserData = async () => {
@@ -215,6 +223,46 @@ export default function Page() {
     }
   };
 
+  // Calculate participant stats and sort them
+  const getParticipantStats = (participants: Session['participants']): ParticipantWithStats[] => {
+    return participants.map(participant => {
+      const participantTasks = tasks.filter(task => task.user === participant.id);
+      const totalTasks = participantTasks.length;
+      const completedTasks = participantTasks.filter(task => task.is_done).length;
+      const completionPercentage = totalTasks > 0 
+        ? (completedTasks / totalTasks) * 100 
+        : 0;
+
+      return {
+        id: participant.id,
+        username: participant.username,
+        totalTasks,
+        completedTasks,
+        completionPercentage,
+        position: 0 // Will be set after sorting
+      };
+    });
+  };
+
+  // Sort participants by completion percentage
+  const getSortedParticipants = (participants: Session['participants']): ParticipantWithStats[] => {
+    return getParticipantStats(participants)
+      .sort((a, b) => b.completionPercentage - a.completionPercentage)
+      .map((stats, index) => ({
+        ...stats,
+        position: index + 1
+      }));
+  };
+
+  // Get sorted participants with positions
+  const sortedParticipants = session ? getSortedParticipants(session.participants) : [];
+  const currentParticipantStats = sortedParticipants.find(
+    stats => stats.id === user?.id
+  );
+  const otherParticipantStats = sortedParticipants.filter(
+    stats => stats.id !== user?.id
+  );
+
   return (
     <div className="min-h-screen" style={{backgroundColor: theme.background.primary}}>
       <Nav>
@@ -272,6 +320,8 @@ export default function Page() {
                           onSessionDelete={handleDeleteSession}
                           taskSortOrder={taskSortOrder}
                           onTaskSortChange={setTaskSortOrder}
+                          showRankings={showRankings}
+                          onShowRankingsChange={setShowRankings}
                         />
                         <ShareSessionMenu sessionId={session.uuid} />
                       </div>
@@ -281,7 +331,7 @@ export default function Page() {
                 {/* Task columns using CSS columns */}
                 <div className="columns-1 md:columns-2 gap-6 lg:gap-8 [column-fill:_balance]">
                   {/* Current user's task column */}
-                  {currentParticipant && (
+                  {currentParticipant && currentParticipantStats && (
                     <div className="break-inside-avoid mb-6 lg:mb-8">
                       <TaskColumn
                         title={`${currentParticipant.username} (you)`}
@@ -291,22 +341,26 @@ export default function Page() {
                         onDeleteTask={handleDeleteTask}
                         onEditTask={handleEditTask}
                         togglingTaskId={taskState.togglingTaskId}
+                        position={showRankings ? currentParticipantStats.position : undefined}
+                        completionPercentage={showRankings ? currentParticipantStats.completionPercentage : undefined}
                       />
                     </div>
                   )}
 
                   {/* Other participants' task columns or Share CTA */}
-                  {otherParticipants.length > 0 ? (
-                    otherParticipants.map(participant => (
-                      <div key={participant.id} className="break-inside-avoid mb-6 lg:mb-8">
+                  {otherParticipantStats.length > 0 ? (
+                    otherParticipantStats.map(stats => (
+                      <div key={stats.id} className="break-inside-avoid mb-6 lg:mb-8">
                         <TaskColumn
-                          title={participant.username}
-                          tasks={participantTasks(participant.id)}
+                          title={stats.username}
+                          tasks={participantTasks(stats.id)}
                           isColumnOwner={false}
                           onToggleTask={handleToggleTask}
                           onDeleteTask={handleDeleteTask}
                           onEditTask={handleEditTask}
                           togglingTaskId={taskState.togglingTaskId}
+                          position={showRankings ? stats.position : undefined}
+                          completionPercentage={showRankings ? stats.completionPercentage : undefined}
                         />
                       </div>
                     ))
