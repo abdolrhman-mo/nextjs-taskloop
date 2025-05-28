@@ -13,6 +13,7 @@ import { UserTaskInput } from '@/components/session/UserTaskInput';
 import { BackButton } from '@/components/common/BackButton';
 import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
 import { SettingsMenu } from '@/components/session/SettingsMenu';
+import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
 
 export default function Page() {
   const { theme } = useTheme();
@@ -29,6 +30,7 @@ export default function Page() {
     error: null as string | null,
     isAddingTask: false
   });
+  const [taskSortOrder, setTaskSortOrder] = useState<'newest' | 'oldest'>('newest');
 
   // API and routing hooks
   const { get, put, post, delete: deleteRequest } = useApi();
@@ -176,9 +178,18 @@ export default function Page() {
     }
   };
 
-  // Task filtering by participant
+  // Sort tasks based on current sort order
+  const getSortedTasks = (tasks: Task[]) => {
+    return [...tasks].sort((a, b) => {
+      const timeA = new Date(a.created_at).getTime();
+      const timeB = new Date(b.created_at).getTime();
+      return taskSortOrder === 'newest' ? timeB - timeA : timeA - timeB;
+    });
+  };
+
+  // Update participantTasks to use sorted tasks
   const participantTasks = (participantId: number) => 
-    tasks.filter(task => task.user === participantId);
+    getSortedTasks(tasks.filter(task => task.user === participantId));
 
   const handleLeaveSession = async () => {
     if (!session) return;
@@ -217,82 +228,99 @@ export default function Page() {
       </Nav>
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-6 justify-between">
-            <BackButton href="/" />
-            {session && isParticipant && (
-              <div className="flex-shrink-0 flex items-center gap-2">
-                <SettingsMenu 
-                  sessionId={session.uuid} 
-                  session={session}
-                  isCreator={user && session.creator === user.id}
-                  isParticipant={isParticipant}
-                  onSessionUpdate={setSession}
-                  onSessionLeave={handleLeaveSession}
-                  onSessionDelete={handleDeleteSession}
-                />
-                <ShareSessionMenu sessionId={session.uuid} />
+          <div className="flex flex-col gap-6">
+            {/* Top row with all controls - responsive layout */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              {/* Back button - always visible */}
+              <div className="w-full sm:w-auto">
+                <BackButton href="/" />
+              </div>
+            </div>
+
+            {(loading || userLoading) ? (
+              <div className="text-center py-10" style={{color: theme.typography.primary}}>Loading...</div>
+            ) : error ? (
+              <div className="text-center py-10" style={{color: theme.error.DEFAULT}}>{error}</div>
+            ) : !session ? (
+              <div className="text-center py-10" style={{color: theme.typography.primary}}>No study room found.</div>
+            ) : !user ? (
+              <div className="text-center py-10" style={{color: theme.typography.primary}}>Please log in to view this study room.</div>
+            ) : !isParticipant ? (
+              <div className="text-center py-10" style={{color: theme.typography.primary}}>You are not a participant in this study room.</div>
+            ) : (
+              <div className="flex flex-col gap-6 lg:gap-6">
+                {/* Task input - responsive width */}
+                {currentParticipant && session && isParticipant && (
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+                    <UserTaskInput
+                      userId={currentParticipant.id}
+                      onSubmit={handleAddTask}
+                      isAdding={taskState.isAddingTask}
+                      error={taskState.error}
+                      isFullWidth={false}
+                    />
+
+                    {/* Settings and Share buttons - responsive alignment */}
+                    {session && isParticipant && (
+                      <div className="w-full sm:w-auto flex items-center justify-end gap-2">
+                        <SettingsMenu
+                          sessionId={session.uuid} 
+                          session={session}
+                          isCreator={user && session.creator === user.id}
+                          isParticipant={isParticipant}
+                          onSessionUpdate={setSession}
+                          onSessionLeave={handleLeaveSession}
+                          onSessionDelete={handleDeleteSession}
+                          taskSortOrder={taskSortOrder}
+                          onTaskSortChange={setTaskSortOrder}
+                        />
+                        <ShareSessionMenu sessionId={session.uuid} />
+                      </div>
+                    )}
+                  </div>
+                )}
+                {/* Task columns using CSS columns */}
+                <div className="columns-1 md:columns-2 gap-6 lg:gap-8 [column-fill:_balance]">
+                  {/* Current user's task column */}
+                  {currentParticipant && (
+                    <div className="break-inside-avoid mb-6 lg:mb-8">
+                      <TaskColumn
+                        title={`${currentParticipant.username} (you)`}
+                        tasks={participantTasks(currentParticipant.id)}
+                        isColumnOwner={true}
+                        onToggleTask={handleToggleTask}
+                        onDeleteTask={handleDeleteTask}
+                        onEditTask={handleEditTask}
+                        togglingTaskId={taskState.togglingTaskId}
+                      />
+                    </div>
+                  )}
+
+                  {/* Other participants' task columns or Share CTA */}
+                  {otherParticipants.length > 0 ? (
+                    otherParticipants.map(participant => (
+                      <div key={participant.id} className="break-inside-avoid mb-6 lg:mb-8">
+                        <TaskColumn
+                          title={participant.username}
+                          tasks={participantTasks(participant.id)}
+                          isColumnOwner={false}
+                          onToggleTask={handleToggleTask}
+                          onDeleteTask={handleDeleteTask}
+                          onEditTask={handleEditTask}
+                          togglingTaskId={taskState.togglingTaskId}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="break-inside-avoid mb-6 lg:mb-8">
+                      <ShareRoomCTA sessionId={session.uuid} />
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
-
-          {(loading || userLoading) ? (
-            <div className="text-center py-10" style={{color: theme.typography.primary}}>Loading...</div>
-        ) : error ? (
-            <div className="text-center py-10" style={{color: theme.error.DEFAULT}}>{error}</div>
-          ) : !session ? (
-            <div className="text-center py-10" style={{color: theme.typography.primary}}>No study room found.</div>
-          ) : !user ? (
-            <div className="text-center py-10" style={{color: theme.typography.primary}}>Please log in to view this study room.</div>
-          ) : !isParticipant ? (
-            <div className="text-center py-10" style={{color: theme.typography.primary}}>You are not a participant in this study room.</div>
-          ) : (
-            <div className="flex flex-col gap-6 lg:gap-8">
-              {/* Task input always at top */}
-              {currentParticipant && (
-                <UserTaskInput
-                  username={currentParticipant.username}
-                  userId={currentParticipant.id}
-                  onSubmit={handleAddTask}
-                  isAdding={taskState.isAddingTask}
-                  error={taskState.error}
-                />
-                    )}
-
-              {/* Task columns using CSS columns */}
-              <div className="columns-1 md:columns-2 gap-6 lg:gap-8 [column-fill:_balance]">
-                {/* Current user's task column */}
-                {currentParticipant && (
-                  <div className="break-inside-avoid mb-6 lg:mb-8">
-                    <TaskColumn
-                      title={`${currentParticipant.username} (you)`}
-                      tasks={participantTasks(currentParticipant.id)}
-                      isColumnOwner={true}
-                      onToggleTask={handleToggleTask}
-                      onDeleteTask={handleDeleteTask}
-                      onEditTask={handleEditTask}
-                      togglingTaskId={taskState.togglingTaskId}
-                    />
-                  </div>
-                )}
-
-                {/* Other participants' task columns */}
-                {otherParticipants.map(participant => (
-                  <div key={participant.id} className="break-inside-avoid mb-6 lg:mb-8">
-                    <TaskColumn
-                      title={participant.username}
-                      tasks={participantTasks(participant.id)}
-                      isColumnOwner={false}
-                      onToggleTask={handleToggleTask}
-                      onDeleteTask={handleDeleteTask}
-                      onEditTask={handleEditTask}
-                      togglingTaskId={taskState.togglingTaskId}
-                    />
-                  </div>
-                ))}
-              </div>
-          </div>
-        )}
-      </div>
+        </div>
       </main>
     </div>
   );

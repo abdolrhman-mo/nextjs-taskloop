@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useState, useEffect, useRef } from 'react';
@@ -9,14 +8,8 @@ import { ENDPOINTS } from '@/config/endpoints';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { DropdownMenu } from './common/DropdownMenu';
 import { useHoverBackground } from '@/hooks/useHoverBackground';
-import { Jua } from 'next/font/google';
-import { Repeat } from 'lucide-react';
-
-const jua = Jua({ 
-  weight: '400',
-  subsets: ['latin'],
-  display: 'swap',
-});
+import { Logo } from './common/Logo';
+import { ConfirmationModal } from './common/ConfirmationModal';
 
 interface User {
   id: number;
@@ -34,6 +27,8 @@ export const Nav = ({ children }: NavProps) => {
   const { theme } = useTheme();
   const [username, setUsername] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { get } = useApi();
@@ -67,24 +62,29 @@ export const Nav = ({ children }: NavProps) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        router.push('/login');
-      } else {
-        console.error('Logout failed');
-      }
+      setIsLoggingOut(true);
+      // Simulate a small delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Clear the token from localStorage
+      localStorage.removeItem('token');
+      
+      // Redirect to login page
+      router.push('/auth/login');
     } catch (error) {
       console.error('Logout error:', error);
+      setIsLoggingOut(false);
+      setShowLogoutConfirm(false);
     }
   };
 
   const menuItems = [
     {
       label: 'Logout',
-      onClick: handleLogout,
+      onClick: () => {
+        setShowLogoutConfirm(true);
+        setIsDropdownOpen(false);
+      },
       icon: (
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
@@ -106,19 +106,7 @@ export const Nav = ({ children }: NavProps) => {
       <div className="max-w-8xl mx-auto flex justify-between items-center">
         {/* Left section - Logo */}
         <div className="flex-shrink-0">
-          <Link 
-            href="/" 
-            className={`text-xl sm:text-2xl font-bold tracking-tight cursor-pointer ${jua.className} flex items-center justify-center gap-1 h-10`}
-            style={{ color: theme.brand.background }}
-            >
-            <Repeat className="w-6 h-6" />
-            <span 
-              style={{ color: theme.typography.primary }}
-              className="top-0 md:translate-y-[2px]"
-            >
-              TaskLoop
-            </span>
-          </Link>
+          <Logo />
         </div>
 
         {/* Middle section - Optional children */}
@@ -172,6 +160,22 @@ export const Nav = ({ children }: NavProps) => {
       </div>
     </nav>
     <div className='h-14'></div>
+
+    {/* Logout Confirmation Modal */}
+    <ConfirmationModal
+      isOpen={showLogoutConfirm}
+      onClose={() => {
+        if (!isLoggingOut) {
+          setShowLogoutConfirm(false);
+        }
+      }}
+      onConfirm={handleLogout}
+      title="Logout"
+      message="Are you sure you want to logout? You will need to login again to access your study rooms."
+      confirmText={isLoggingOut ? "Logging out..." : "Logout"}
+      isDestructive={false}
+      isConfirming={isLoggingOut}
+    />
     </>
   );
 }; 

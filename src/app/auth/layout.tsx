@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { theme } from '@/config/theme';
+import { Logo } from '@/components/common/Logo';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,9 +15,7 @@ export default function Layout({ children }: LayoutProps) {
       <header className="shadow" style={{backgroundColor: theme.background.secondary, borderBottom: `1px solid ${theme.border}`}}>
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
-            <Link href="/" className="text-xl font-bold" style={{color: theme.typography.primary}}>
-              TaskLoop
-            </Link>
+            <Logo size="sm" />
             <nav>
               <ul className="flex space-x-4">
                 <li>

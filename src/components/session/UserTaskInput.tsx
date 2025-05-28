@@ -2,7 +2,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { TaskInput } from './TaskInput';
 
 interface UserTaskInputProps {
-  username: string;
   userId: number;
   onSubmit: (text: string, userId: number) => Promise<void>;
   isAdding: boolean;
@@ -11,7 +10,6 @@ interface UserTaskInputProps {
 }
 
 export function UserTaskInput({ 
-  username, 
   userId, 
   onSubmit, 
   isAdding, 
@@ -22,19 +20,18 @@ export function UserTaskInput({
 
   return (
     <div className={`${isFullWidth ? 'md:col-span-2' : ''} my-2`}>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl">
         <div 
-          className="p-4 py-6 rounded-lg transition-colors duration-200" 
+          className="rounded-lg transition-colors duration-200" 
           style={{
-            backgroundColor: theme.background.secondary, 
-            border: `1px solid ${theme.border}`
+            backgroundColor: theme.background.secondary
           }}
         >
           <h3 
             className="text-lg font-medium pb-2" 
             style={{color: theme.typography.primary}}
           >
-            Add to {username}&apos;s tasks
+            Add to your todo
           </h3>
           <TaskInput
             onSubmit={(text) => onSubmit(text, userId)}

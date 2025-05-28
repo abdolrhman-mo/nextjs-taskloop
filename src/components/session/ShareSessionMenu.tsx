@@ -23,7 +23,7 @@ export function ShareSessionMenu({ sessionId }: ShareSessionMenuProps) {
           ...style,
           color: theme.typography.primary,
         }}
-        title="Share session"
+        title="Share study room"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >

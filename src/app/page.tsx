@@ -6,11 +6,11 @@ import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { Nav } from '@/components/Nav';
 import { SessionList } from '@/components/sessions/SessionList';
-import { EmptyState } from '@/components/sessions/EmptyState';
 import { ErrorState } from '@/components/sessions/ErrorState';
 import { LoadingState } from '@/components/sessions/LoadingState';
 import { Session, User } from '@/types/session';
 import { useTheme } from '@/contexts/ThemeContext';
+import { CreateRoomCTA } from '@/components/sessions/CreateRoomCTA';
 
 interface LeaveState {
   sessionId: string | null;
@@ -160,7 +160,11 @@ export default function Home() {
 
           {loading && <LoadingState />}
           {!loading && error && <ErrorState error={error} onLogout={handleLogout} />}
-          {!loading && !error && sessions.length === 0 && <EmptyState />}
+          {!loading && !error && sessions.length === 0 && (
+            <div className="mt-8">
+              <CreateRoomCTA />
+            </div>
+          )}
           {!loading && !error && sessions.length > 0 && (
             <SessionList 
               sessions={sessions}

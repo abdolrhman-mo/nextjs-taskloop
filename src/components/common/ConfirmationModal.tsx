@@ -10,6 +10,7 @@ interface ConfirmationModalProps {
   message: string;
   confirmText: string;
   isDestructive?: boolean;
+  isConfirming?: boolean;
 }
 
 export function ConfirmationModal({ 
@@ -19,7 +20,8 @@ export function ConfirmationModal({
   title,
   message,
   confirmText,
-  isDestructive = false
+  isDestructive = false,
+  isConfirming = false
 }: ConfirmationModalProps) {
   const { theme } = useTheme();
   const modalRef = useRef<HTMLDivElement>(null);
@@ -84,7 +86,10 @@ export function ConfirmationModal({
         <div className="p-4 border-t flex gap-3" style={{ borderColor: theme.border }}>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+            disabled={isConfirming}
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              isConfirming ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+            }`}
             style={{
               backgroundColor: isDestructive ? theme.error.DEFAULT : theme.brand.background,
               color: theme.background.primary
@@ -94,7 +99,10 @@ export function ConfirmationModal({
           </button>
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+            disabled={isConfirming}
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              isConfirming ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+            }`}
             style={{
               backgroundColor: `${theme.typography.secondary}20`,
               color: theme.typography.secondary

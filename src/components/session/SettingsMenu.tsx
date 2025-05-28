@@ -5,7 +5,7 @@ import { useApi } from '@/hooks/useApi';
 import { useRouter } from 'next/navigation';
 import { DropdownPanel } from '@/components/common/DropdownPanel';
 import { ConfirmationModal } from '@/components/common/ConfirmationModal';
-import { Settings, Edit2, LogOut, Trash2 } from 'lucide-react';
+import { Settings, Edit2, LogOut, Trash2, ArrowUpDown } from 'lucide-react';
 import { Session } from '@/types/session';
 import { ENDPOINTS } from '@/config/endpoints';
 
@@ -17,6 +17,8 @@ interface SettingsMenuProps {
   onSessionUpdate: (session: Session) => void;
   onSessionLeave?: () => void;
   onSessionDelete?: () => void;
+  taskSortOrder: 'newest' | 'oldest';
+  onTaskSortChange: (order: 'newest' | 'oldest') => void;
 }
 
 interface EditState {
@@ -30,7 +32,9 @@ export function SettingsMenu({
   isParticipant,
   onSessionUpdate,
   onSessionLeave,
-  onSessionDelete
+  onSessionDelete,
+  taskSortOrder,
+  onTaskSortChange
 }: SettingsMenuProps) {
   const { theme } = useTheme();
   const { put, post, delete: deleteRequest } = useApi();
@@ -248,6 +252,43 @@ export function SettingsMenu({
                   <Edit2 className="w-4 h-4" />
                 </button>
               )}
+            </div>
+
+            {/* Task Sort Settings */}
+            <div className="space-y-2 pt-2 border-t" style={{ borderColor: theme.border }}>
+              <h4 className="text-sm font-medium" style={{ color: theme.typography.secondary }}>
+                Task Sort Order
+              </h4>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onTaskSortChange('newest')}
+                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
+                    taskSortOrder === 'newest' ? 'opacity-100' : 'opacity-50 hover:opacity-75'
+                  }`}
+                  style={{
+                    backgroundColor: `${theme.brand.background}10`,
+                    color: theme.typography.primary,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ArrowUpDown className="w-4 h-4" />
+                  <span>Newest First</span>
+                </button>
+                <button
+                  onClick={() => onTaskSortChange('oldest')}
+                  className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
+                    taskSortOrder === 'oldest' ? 'opacity-100' : 'opacity-50 hover:opacity-75'
+                  }`}
+                  style={{
+                    backgroundColor: `${theme.brand.background}10`,
+                    color: theme.typography.primary,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ArrowUpDown className="w-4 h-4 rotate-180" />
+                  <span>Oldest First</span>
+                </button>
+              </div>
             </div>
 
             {/* Study Room Actions */}
