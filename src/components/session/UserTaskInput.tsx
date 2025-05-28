@@ -22,9 +22,9 @@ export function UserTaskInput({
     <div className={`${isFullWidth ? 'md:col-span-2' : ''} my-2`}>
       <div className="max-w-2xl">
         <div 
-          className="rounded-lg transition-colors duration-200" 
+          className="rounded-lg transition-colors duration-200 p-4" 
           style={{
-            backgroundColor: theme.background.secondary
+            backgroundColor: `${theme.brand.background}20`
           }}
         >
           <h3 
