@@ -24,11 +24,12 @@ export function UserTaskInput({
         <div 
           className="rounded-lg transition-colors duration-200 p-4" 
           style={{
-            backgroundColor: `${theme.brand.background}20`
+            backgroundColor: `${theme.brand.background}10`,
+            border: `1px solid ${theme.border}`
           }}
         >
           <h3 
-            className="text-lg font-medium pb-2" 
+            className="text-xl font-bold pb-2"
             style={{color: theme.typography.primary}}
           >
             Add to your todo
