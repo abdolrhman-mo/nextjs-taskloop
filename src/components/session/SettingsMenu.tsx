@@ -159,7 +159,7 @@ export function SettingsMenu({
       <button
         ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="p-1.5 rounded-lg transition-colors duration-200 cursor-pointer"
+        className="px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer flex items-center gap-2"
         style={{ 
           ...style,
           color: theme.typography.primary,
@@ -170,6 +170,7 @@ export function SettingsMenu({
         title="Room Settings"
       >
         <Settings className="w-5 h-5" />
+        <span className="text-base">Settings</span>
       </button>
 
       {isOpen && (
