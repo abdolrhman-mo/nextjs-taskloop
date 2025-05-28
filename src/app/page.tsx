@@ -152,7 +152,7 @@ export default function Home() {
                 backgroundColor: theme.brand.background,
                 color: theme.brand.text
               }}
-              className="px-6 py-3 rounded-lg text-base font-medium shadow-md hover:opacity-80 transition-opacity duration-200"
+              className="px-6 py-3 rounded-lg text-base font-medium hover:opacity-80 transition-opacity duration-200"
             >
               Create New Session
             </Link>

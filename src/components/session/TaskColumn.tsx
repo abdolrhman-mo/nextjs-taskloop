@@ -24,9 +24,10 @@ export function TaskColumn({
 }: TaskColumnProps) {
   const { theme } = useTheme();
   // Sort tasks by created_at in descending order (latest first)
-  const sortedTasks = [...tasks].sort((a, b) => 
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+  // const sortedTasks = [...tasks].sort((a, b) => 
+  //   new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  // );
+  const sortedTasks = tasks;
   
   const activeTasks = sortedTasks.filter(task => !task.is_done);
   const completedTasks = sortedTasks.filter(task => task.is_done);
