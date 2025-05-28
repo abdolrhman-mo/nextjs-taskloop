@@ -4,15 +4,13 @@ import { Session } from '@/types/session';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { SessionNameEditForm } from './SessionNameEditForm';
-import { EditSessionButton } from './EditSessionButton';
 
 interface SessionHeaderProps {
   session: Session;
-  isSessionParticipant: boolean;
   onSessionUpdate: (updatedSession: Session) => void;
 }
 
-export function SessionHeader({ session, isSessionParticipant, onSessionUpdate }: SessionHeaderProps) {
+export function SessionHeader({ session, onSessionUpdate }: SessionHeaderProps) {
   const { theme } = useTheme();
   const [editState, setEditState] = useState({
     isEditing: false,

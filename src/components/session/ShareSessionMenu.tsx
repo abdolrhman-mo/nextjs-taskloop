@@ -36,7 +36,7 @@ export function ShareSessionMenu({ sessionId }: ShareSessionMenuProps) {
         <ShareSessionDropdown
           onClose={() => setIsDropdownOpen(false)}
           sessionId={sessionId}
-          triggerRef={triggerRef}
+          triggerRef={triggerRef as React.RefObject<HTMLElement | HTMLButtonElement>}
         />
       )}
     </div>

@@ -221,7 +221,6 @@ export default function Page() {
         {session && isParticipant && (
             <SessionHeader
               session={session}
-              isSessionParticipant={isParticipant}
               onSessionUpdate={setSession}
             />
         )}
