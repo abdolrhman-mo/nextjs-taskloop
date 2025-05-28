@@ -30,29 +30,30 @@ export const lightTheme = {
 
 export const darkTheme = {
   brand: {
-    text: '#ffffff',
+    text: '#FFFFFF',
     background: '#269DD9',
-    hover: '#7c3aed', // Violet-600
+    hover: '#2dd4bf',       // Teal-400 for interactive hover
   },
   typography: {
-    primary: '#f1f5f9', // Slate-50
-    secondary: '#94a3b8', // Slate-400
+    primary: '#ECECEC', // Light gray text
+    secondary: '#A1A1AA', // Muted gray (like ChatGPT sidebar/help text)
   },
   background: {
-    primary: '#0f172a', // Slate-900
-    secondary: '#1e293b', // Slate-800
-    tertiary: '#334155', // Slate-700
-    fourth: '#45556c', // Slate-600
-    todo_task: '#0f172a', // Slate-900
-    done_task: '#0f172a', // Slate-900
+    primary: '#1E1E20', // Main background (ChatGPT’s conversation area)
+    secondary: '#2A2B2E', // Sidebar / panel background
+    tertiary: '#3A3B3F',  // Cards or containers
+    fourth: '#4B4C50',    // Optional deeper layer
+    todo_task: '#2C2A23', // Subtle difference, same as secondary
+    done_task: '#1F2A26', // Slight green tint for completed items
   },
-  border: '#334155', // Slate-700
-  hover: '#252C46',
+  border: '#3F3F46', // Neutral gray for dividers
+  hover: '#3C3C44', // Subtle dark hover
   error: {
-    DEFAULT: '#ef4444', // Red-500
+    DEFAULT: '#EF4444', // Red-500
     text: '#ffffff'
   }
 };
+
 
 export type Theme = typeof lightTheme;
 
