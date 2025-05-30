@@ -40,7 +40,7 @@ export default function Page() {
     isAddingTask: false
   });
   const [taskSortOrder, setTaskSortOrder] = useState<'newest' | 'oldest'>('newest');
-  const [showRankings, setShowRankings] = useState(true);
+  const [showRankings, setShowRankings] = useState(false);
 
   // API and routing hooks
   const { get, put, post, delete: deleteRequest } = useApi();
