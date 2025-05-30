@@ -59,7 +59,7 @@ export function TaskColumn({
       {/* Header section with user name and position */}
       <div className="p-4" style={{backgroundColor: `${theme.brand.background}10`}}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
             {position && position <= 3 && (
               <Trophy className={`w-5 h-5 ${getPositionColor(position)}`} />
             )}
