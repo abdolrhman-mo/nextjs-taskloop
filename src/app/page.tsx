@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
+import { Session, User } from '@/types/session';
+import { useTheme } from '@/contexts/ThemeContext';
+
 import { Nav } from '@/components/Nav';
 import { SessionList } from '@/components/sessions/SessionList';
 import { ErrorState } from '@/components/sessions/ErrorState';
 import { LoadingState } from '@/components/sessions/LoadingState';
-import { Session, User } from '@/types/session';
-import { useTheme } from '@/contexts/ThemeContext';
 import { CreateRoomCTA } from '@/components/sessions/CreateRoomCTA';
 
 interface LeaveState {
