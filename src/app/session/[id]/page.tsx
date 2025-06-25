@@ -47,6 +47,45 @@ export default function Page() {
   const { id } = useParams();
   const router = useRouter();
 
+  // TODO: MOBILE APP DEEP LINKING - Implement when deploying mobile app
+  // When user opens this page, attempt to open mobile app with deep link
+  // If mobile device and app not installed, show popup to install app
+  // 
+  // Implementation:
+  // 1. Add mobile detection utility
+  // 2. Attempt deep link: window.location.href = `taskloopmobile://session/${id}`
+  // 3. If mobile device, setTimeout(() => {
+  //     show popup modal asking to install app
+  //     if yes: window.location.href = 'https://play.google.com/store/apps/details?id=com.yourapp'
+  //     if no: continue with web app
+  //   }, 2000);
+  // 4. Create popup modal component for app installation prompt
+  // 5. Update app store URLs when deploying to actual stores
+  //
+  // Example code (commented out until mobile app is ready):
+  /*
+  useEffect(() => {
+    if (id) {
+      // Attempt to open mobile app
+      window.location.href = `taskloopmobile://session/${id}`;
+      
+      // Check if mobile device
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        setTimeout(() => {
+          // Show popup modal to install app
+          // const showInstallPopup = confirm('Would you like to install the TaskLoop mobile app for a better experience?');
+          // if (showInstallPopup) {
+          //   window.location.href = 'https://play.google.com/store/apps/details?id=com.yourapp'; // Android
+          //   // window.location.href = 'https://apps.apple.com/app/yourapp'; // iOS
+          // }
+        }, 2000);
+      }
+    }
+  }, [id]);
+  */
+
   // Session participant checks
   const isParticipant = user && session && session.participants.some(p => p.id === user.id);
   const currentParticipant = user && session ? session.participants.find(p => p.id === user.id) : null;
