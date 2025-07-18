@@ -23,7 +23,7 @@ export default function ClientLayout({
     if (!isClient) return;
 
     // Don't redirect if already on login page or if authenticated
-    if (pathname === '/auth/login' || pathname === '/auth/register' || auth.isAuthenticated()) {
+    if (pathname === '/auth/login' || pathname === '/auth/register' || auth.isAuthenticated() || pathname === '/privacy') {
       return;
     }
 
