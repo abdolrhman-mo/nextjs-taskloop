@@ -10,10 +10,10 @@ export default function DeleteAccount() {
   
         <p className="mb-4 font-semibold">
           <a
-            href="mailto:abdelrahmanmakady@gmail.com"
+            href="mailto:abdelrahmanmakadyy@gmail.com"
             className="text-blue-600 underline"
           >
-            abdelrahmanmakady@gmail.com
+            abdelrahmanmakadyy@gmail.com
           </a>
         </p>
   

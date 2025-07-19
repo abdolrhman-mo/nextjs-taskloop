@@ -45,10 +45,10 @@ export default function PrivacyPolicy() {
         <p className="mb-4">
           If you have any questions about this Privacy Policy, please contact us at:&nbsp;
           <a
-            href="mailto:abdelrahmanmakady@gmail.com"
+            href="mailto:abdelrahmanmakadyy@gmail.com"
             className="text-blue-600 underline"
           >
-            abdelrahmanmakady@gmail.com
+            abdelrahmanmakadyy@gmail.com
           </a>.
         </p>
   
