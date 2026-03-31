@@ -1,6 +1,23 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { API_URL } from '@/config/api';
 import { useCallback } from 'react';
+
+export function getErrorMessage(err: unknown, fallback: string): string {
+  if (err instanceof AxiosError && err.response?.data) {
+    const data = err.response.data;
+    if (typeof data === 'string') return data;
+    if (typeof data.detail === 'string') return data.detail;
+    if (typeof data.message === 'string') return data.message;
+    if (typeof data.error === 'string') return data.error;
+    // Handle DRF field errors like { "username": ["This field is required."] }
+    const fieldErrors = Object.entries(data)
+      .filter(([, v]) => Array.isArray(v) || typeof v === 'string')
+      .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+      .join('; ');
+    if (fieldErrors) return fieldErrors;
+  }
+  return fallback;
+}
 
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({

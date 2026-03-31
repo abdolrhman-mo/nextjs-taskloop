@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useApi } from '@/hooks/useApi';
+import { useApi, getErrorMessage } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Nav } from '@/components/Nav';
@@ -57,7 +57,7 @@ export default function CreateSessionPage() {
       }
     } catch (err) {
       console.error('Failed to create session:', err);
-      setError('Failed to create session. Please try again.');
+      setError(getErrorMessage(err, 'Failed to create session. Please try again.'));
       setIsCreating(false);
     }
   };
@@ -67,7 +67,7 @@ export default function CreateSessionPage() {
       <Nav />
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-12">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
             <div>
               <h1 className="text-4xl font-bold mb-2" style={{color: theme.typography.primary}}>Create New Session</h1>
               <p className="text-sm" style={{color: theme.typography.secondary}}>Start a new task sharing session</p>

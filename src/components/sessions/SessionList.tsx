@@ -45,7 +45,7 @@ export const SessionList = ({
   return (
     <>
       {latestSession && (
-        <div className="mb-12 mt-8">
+        <div className="mb-8 mt-4">
           <h3 className="text-2xl font-semibold mb-4 tracking-tight" style={{color: theme.typography.primary}}>
             Latest Room
           </h3>
@@ -68,7 +68,7 @@ export const SessionList = ({
           <h3 className="text-2xl font-semibold mb-4 tracking-tight" style={{color: theme.typography.primary}}>
             {latestSession ? 'Other Active Rooms' : 'All Rooms'}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {otherSessions.map(session => (
               <SessionCard 
                 key={session.uuid} 

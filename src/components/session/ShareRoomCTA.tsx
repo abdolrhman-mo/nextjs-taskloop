@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Users, Eye, Target, Sparkles } from 'lucide-react';
-import { BaseCTA } from '@/components/common/BaseCTA';
+import { Users } from 'lucide-react';
 
 interface ShareRoomCTAProps {
   sessionId: string;
@@ -25,65 +24,24 @@ export function ShareRoomCTA({ sessionId }: ShareRoomCTAProps) {
     }
   };
 
-  const features = [
-    {
-      icon: Eye,
-      title: 'Live Task Updates',
-      description: 'See what your friends have finished in real-time'
-    },
-    {
-      icon: Target,
-      title: 'Stay Accountable',
-      description: 'Keep focused knowing your friends are watching'
-    },
-    {
-      icon: Sparkles,
-      title: 'Group Motivation',
-      description: 'Get inspired by your friends\' accomplishments'
-    }
-  ];
-
-  const actionButton = (
-    <>
+  return (
+    <div className="flex items-center gap-3 py-3">
+      <Users className="w-4 h-4 shrink-0" style={{ color: theme.typography.secondary }} />
+      <span className="text-sm" style={{ color: theme.typography.secondary }}>
+        Invite friends
+      </span>
       <button
         onClick={handleCopyLink}
-        className="cursor-pointer w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors duration-200 hover:bg-opacity-30"
-        style={{
-          backgroundColor: `${theme.brand.background}20`,
-          color: theme.brand.background
-        }}
+        className="cursor-pointer text-sm font-medium hover:opacity-70 transition-opacity"
+        style={{ color: theme.brand.background }}
       >
-        {copyState.isCopied ? (
-          <>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <span>Link Copied!</span>
-          </>
-        ) : (
-          <>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <span>Copy Room Link</span>
-          </>
-        )}
+        {copyState.isCopied ? 'Copied!' : 'Copy link'}
       </button>
       {copyState.error && (
-        <p className="mt-3 text-sm" style={{ color: theme.error.DEFAULT }}>
+        <span className="text-xs" style={{ color: theme.error.DEFAULT }}>
           {copyState.error}
-        </p>
+        </span>
       )}
-    </>
+    </div>
   );
-
-  return (
-    <BaseCTA
-      icon={Users}
-      title="Study Together, Achieve More!"
-      description="Share this study room with your friends to collaborate on tasks together"
-      features={features}
-      actionButton={actionButton}
-    />
-  );
-} 
+}

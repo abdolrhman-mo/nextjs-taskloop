@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Session } from '@/types/session';
-import { useApi } from '@/hooks/useApi';
+import { useApi, getErrorMessage } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { SessionNameEditForm } from './SessionNameEditForm';
 
@@ -31,9 +31,9 @@ export function SessionHeader({ session, onSessionUpdate }: SessionHeaderProps) 
       setEditState(prev => ({ ...prev, isEditing: false }));
     } catch (err) {
       console.error('Failed to update session name:', err);
-      setEditState(prev => ({ 
-        ...prev, 
-        error: 'Failed to update session name. Please try again.' 
+      setEditState(prev => ({
+        ...prev,
+        error: getErrorMessage(err, 'Failed to update session name. Please try again.')
       }));
     } finally {
       setEditState(prev => ({ ...prev, isLoading: false }));
@@ -55,13 +55,10 @@ export function SessionHeader({ session, onSessionUpdate }: SessionHeaderProps) 
             />
           ) : (
             <div className="flex items-center gap-3">
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight"
+              <h2 className="text-base sm:text-lg font-semibold"
                 style={{color: theme.typography.primary}}
               >
-                <span style={{ color: theme.typography.secondary }}>Study Room: </span>
-                <span className='inline-block'>
-                  {session.name}
-                </span>
+                {session.name}
               </h2>
               {/* {isSessionParticipant && (
                 <EditSessionButton

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useApi } from '@/hooks/useApi';
+import { useApi, getErrorMessage } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { theme } from '@/config/theme';
 import { WhatsAppGroupModal } from '@/components/WhatsAppGroupModal';
@@ -58,7 +58,7 @@ export default function RegisterPage() {
       router.push('/');
     } catch (err) {
       console.error(err);
-      setError('Registration failed. Please try again.');
+      setError(getErrorMessage(err, 'Registration failed. Please try again.'));
     } finally {
       setLoading(false);
     }
