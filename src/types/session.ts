@@ -12,6 +12,8 @@ export interface Session {
   participants: Participant[];
   participants_count: number;
   created_at: string;
+  notes: string;
+  theme_color: string;
 }
 
 export interface Task {

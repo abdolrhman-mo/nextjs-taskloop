@@ -1,7 +1,7 @@
 import { Task } from '@/types/session';
 import { useTheme } from '@/contexts/ThemeContext';
 import { TaskItem } from './TaskItem';
-import { CheckCircleIcon, CircleIcon, Trophy } from 'lucide-react';
+import { CheckCircleIcon, CircleIcon, Trophy, Archive } from 'lucide-react';
 
 interface TaskColumnProps {
   title: string;
@@ -10,9 +10,11 @@ interface TaskColumnProps {
   onToggleTask: (task: Task) => Promise<void>;
   onDeleteTask: (taskId: number) => Promise<void>;
   onEditTask: (taskId: number, newText: string) => Promise<void>;
+  onArchiveDone?: (completedTasks: Task[]) => void;
   togglingTaskId: number | null;
   position?: number;
   completionPercentage?: number;
+  themeColor?: string;
 }
 
 export function TaskColumn({
@@ -22,9 +24,11 @@ export function TaskColumn({
   onToggleTask,
   onDeleteTask,
   onEditTask,
+  onArchiveDone,
   togglingTaskId,
   position,
-  completionPercentage
+  completionPercentage,
+  themeColor
 }: TaskColumnProps) {
   const { theme } = useTheme();
   // Sort tasks by created_at in descending order (latest first)
@@ -57,7 +61,7 @@ export function TaskColumn({
   return (
     <div className="rounded-lg shadow- mdoverflow-hidden h-fit" style={{backgroundColor: theme.background.secondary, border: `1px solid ${theme.border}`}}>
       {/* Header section with user name and position */}
-      <div className="p-4" style={{backgroundColor: `${theme.brand.background}10`}}>
+      <div className="p-4" style={{backgroundColor: themeColor ? `${themeColor}10` : `${theme.brand.background}10`}}>
         <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
             {position && position <= 3 && (
@@ -79,10 +83,10 @@ export function TaskColumn({
       </div>
 
       {/* Task lists section */}
-      <div className="p-6 space-y-4 min-h-0">
+      <div className="p-4 space-y-3 min-h-0">
         <div>
-          <h4 className="text-lg font-semibold mb-3 flex items-center gap-2" style={{color: theme.typography.primary}}>
-            <CircleIcon className="text-amber-500 w-4 h-4" />
+          <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{color: theme.typography.secondary}}>
+            <CircleIcon className="text-amber-500 w-3.5 h-3.5" />
             To Do
             {/* <span className="text-sm px-2 py-0.5 rounded-full" style={{
               backgroundColor: `${theme.brand.background}20`,
@@ -110,7 +114,7 @@ export function TaskColumn({
                 </div>
               ))
             ) : (
-              <p className="italic text-center py-3 bg-opacity-50 rounded-lg" style={{
+              <p className="italic text-center py-2 text-xs bg-opacity-50 rounded-md" style={{
                 backgroundColor: theme.background.primary,
                 color: theme.typography.secondary
               }}>
@@ -120,20 +124,26 @@ export function TaskColumn({
           </div>
         </div>
 
-        <div className="pt-4 border-t" style={{borderColor: theme.border}}>
-          <h4 className="text-lg font-semibold mb-3 flex items-center gap-2" style={{color: theme.typography.primary}}>
-            <CheckCircleIcon className="text-green-500 w-4 h-4" />
-            Done
-            {/* <span className="text-sm px-2 py-0.5 rounded-full" style={{
-              backgroundColor: `${theme.brand.background}20`,
-              color: theme.typography.primary
-            }}>
-              {completedTasks.length}
-            </span> */}
-          </h4>
+        {completedTasks.length > 0 && (
+        <div className="pt-3 border-t" style={{borderColor: theme.border}}>
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-semibold flex items-center gap-2" style={{color: theme.typography.secondary}}>
+              <CheckCircleIcon className="text-green-500 w-3.5 h-3.5" />
+              Done
+            </h4>
+            {isColumnOwner && onArchiveDone && completedTasks.length > 0 && (
+              <button
+                onClick={() => onArchiveDone(completedTasks)}
+                className="cursor-pointer flex items-center gap-1 text-xs px-2 py-1 rounded-md transition-opacity hover:opacity-70"
+                style={{ color: theme.typography.secondary, border: `1px solid ${theme.border}` }}
+              >
+                <Archive className="w-3 h-3" />
+                Archive
+              </button>
+            )}
+          </div>
           <div>
-            {completedTasks.length > 0 ? (
-              completedTasks.map((task) => (
+              {completedTasks.map((task) => (
                 <div
                   key={task.id}
                   className="rounded-lg mb-1"
@@ -148,17 +158,10 @@ export function TaskColumn({
                     isColumnOwner={isColumnOwner}
                   />
                 </div>
-              ))
-            ) : (
-              <p className="italic text-center py-3 bg-opacity-50 rounded-lg" style={{
-                backgroundColor: theme.background.primary,
-                color: theme.typography.secondary
-              }}>
-                No tasks done
-              </p>
-            )}
+              ))}
           </div>
         </div>
+        )}
       </div>
     </div>
   );

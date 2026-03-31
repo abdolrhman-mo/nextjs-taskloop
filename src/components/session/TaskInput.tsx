@@ -5,9 +5,10 @@ interface TaskInputProps {
   onSubmit: (text: string) => Promise<void>;
   isAdding: boolean | null;
   error: string | null;
+  themeColor?: string;
 }
 
-export function TaskInput({ onSubmit, isAdding, error }: TaskInputProps) {
+export function TaskInput({ onSubmit, isAdding, error, themeColor }: TaskInputProps) {
   const { theme } = useTheme();
   const [newTask, setNewTask] = useState('');
 
@@ -41,7 +42,7 @@ export function TaskInput({ onSubmit, isAdding, error }: TaskInputProps) {
             color: theme.typography.primary,
             border: `1px solid ${theme.border}`,
             '--tw-ring-offset-color': theme.background.primary,
-            '--tw-ring-color': `${theme.brand.background}40`
+            '--tw-ring-color': `${themeColor || theme.brand.background}40`
           } as React.CSSProperties}
           disabled={isAddingTask}
         />
@@ -51,7 +52,7 @@ export function TaskInput({ onSubmit, isAdding, error }: TaskInputProps) {
             active:scale-95 ${(!isAddingTask && !newTask.trim()) || isAddingTask ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-90'}
             flex items-center gap-2`}
           style={{
-            backgroundColor: theme.brand.background,
+            backgroundColor: themeColor || theme.brand.background,
             color: theme.brand.text
           }}
           disabled={!newTask.trim() || isAddingTask}

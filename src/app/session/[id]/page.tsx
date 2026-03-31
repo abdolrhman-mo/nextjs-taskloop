@@ -1,19 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useApi } from '@/hooks/useApi';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useApi, getErrorMessage } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
 import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Nav } from '@/components/Nav';
+import { BackButton } from '@/components/common/BackButton';
 import { SessionHeader } from '@/components/session/SessionHeader';
 import { TaskColumn } from '@/components/session/TaskColumn';
 import { Session, Task, User } from '@/types/session';
 import { UserTaskInput } from '@/components/session/UserTaskInput';
-import { BackButton } from '@/components/common/BackButton';
+import { RoomNotes } from '@/components/session/RoomNotes';
+
 import { ShareSessionMenu } from '@/components/session/ShareSessionMenu';
 import { SettingsMenu } from '@/components/session/SettingsMenu';
-import { ShareRoomCTA } from '@/components/session/ShareRoomCTA';
+
 
 interface ParticipantWithStats {
   id: number;
@@ -41,6 +43,8 @@ export default function Page() {
   });
   const [taskSortOrder, setTaskSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [showRankings, setShowRankings] = useState(false);
+  const [, setArchiveProgress] = useState<string | null>(null);
+  const isEditingNotes = useRef(false);
 
   // API and routing hooks
   const { get, put, post, delete: deleteRequest } = useApi();
@@ -115,10 +119,15 @@ export default function Page() {
         setLoading(true);
         }
         const sessionResponse = await get<Session>(ENDPOINTS.SESSIONS.READ.path(id as string));
-        setSession(sessionResponse);
+        // Skip overwriting notes when user is actively editing
+        if (isEditingNotes.current) {
+          setSession(prev => prev ? { ...sessionResponse, notes: prev.notes } : sessionResponse);
+        } else {
+          setSession(sessionResponse);
+        }
       } catch (err) {
         console.error(err);
-        setError('Failed to load session');
+        setError(getErrorMessage(err, 'Failed to load session'));
       } finally {
         if (isInitialLoad) {
         setLoading(false);
@@ -167,9 +176,9 @@ export default function Page() {
       setTasks(prevTasks => [...prevTasks, createdTask]);
     } catch (err) {
       console.error('Failed to add task', err);
-      setTaskState(prev => ({ 
-        ...prev, 
-        error: 'Failed to add task. Please try again.' 
+      setTaskState(prev => ({
+        ...prev,
+        error: getErrorMessage(err, 'Failed to add task. Please try again.')
       }));
     } finally {
       setTaskState(prev => ({ ...prev, addingTask: false }));
@@ -189,9 +198,9 @@ export default function Page() {
       ));
     } catch (err) {
       console.error('Failed to update task status', err);
-      setTaskState(prev => ({ 
-        ...prev, 
-        error: 'Failed to update task status. Please try again.' 
+      setTaskState(prev => ({
+        ...prev,
+        error: getErrorMessage(err, 'Failed to update task status. Please try again.')
       }));
     } finally {
       setTaskState(prev => ({ ...prev, togglingTaskId: null }));
@@ -218,12 +227,35 @@ export default function Page() {
       ));
     } catch (err) {
       console.error('Failed to update task', err);
-      setTaskState(prev => ({ 
-        ...prev, 
-        error: 'Failed to update task. Please try again.' 
+      setTaskState(prev => ({
+        ...prev,
+        error: getErrorMessage(err, 'Failed to update task. Please try again.')
       }));
     }
   };
+
+  // Archive all completed tasks for a participant (sequential deletes)
+  const handleArchiveDone = useCallback(async (completedTasks: Task[]) => {
+    if (!id) return;
+    setArchiveProgress(`Archiving 0/${completedTasks.length}...`);
+    for (let i = 0; i < completedTasks.length; i++) {
+      try {
+        await deleteRequest(ENDPOINTS.SESSIONS.TASKS.DELETE.path(id as string, completedTasks[i].id.toString()));
+        setTasks(prev => prev.filter(t => t.id !== completedTasks[i].id));
+        setArchiveProgress(`Archiving ${i + 1}/${completedTasks.length}...`);
+      } catch (err) {
+        console.error('Failed to archive task', err);
+        setArchiveProgress(`Archived ${i}/${completedTasks.length}. Some failed.`);
+        setTimeout(() => setArchiveProgress(null), 2000);
+        return;
+      }
+    }
+    setArchiveProgress(null);
+  }, [id, deleteRequest]);
+
+  const handleNotesChange = useCallback((notes: string) => {
+    setSession(prev => prev ? { ...prev, notes } : prev);
+  }, []);
 
   // Sort tasks based on current sort order
   const getSortedTasks = (tasks: Task[]) => {
@@ -246,7 +278,7 @@ export default function Page() {
       router.push('/');
     } catch (err) {
       console.error('Failed to leave study room:', err);
-      setError('Failed to leave study room. Please try again.');
+      setError(getErrorMessage(err, 'Failed to leave study room. Please try again.'));
     }
   };
 
@@ -258,7 +290,7 @@ export default function Page() {
       router.push('/');
     } catch (err) {
       console.error('Failed to delete study room:', err);
-      setError('Failed to delete study room. Please try again.');
+      setError(getErrorMessage(err, 'Failed to delete study room. Please try again.'));
     }
   };
 
@@ -303,8 +335,33 @@ export default function Page() {
   );
 
   return (
-    <div className="min-h-screen" style={{backgroundColor: theme.background.primary}}>
-      <Nav>
+    <div className="min-h-screen" style={{
+      backgroundColor: theme.background.primary,
+      ...(session?.theme_color ? {
+        backgroundImage: `linear-gradient(180deg, ${session.theme_color}14 0%, transparent 300px)`,
+      } : {}),
+    }}>
+      <Nav
+        leftAction={<BackButton href="/" />}
+        rightActions={session && isParticipant && user ? (
+          <>
+            <SettingsMenu
+              sessionId={session.uuid}
+              session={session}
+              isCreator={user && session.creator === user.id}
+              isParticipant={isParticipant}
+              onSessionUpdate={setSession}
+              onSessionLeave={handleLeaveSession}
+              onSessionDelete={handleDeleteSession}
+              taskSortOrder={taskSortOrder}
+              onTaskSortChange={setTaskSortOrder}
+              showRankings={showRankings}
+              onShowRankingsChange={setShowRankings}
+            />
+            <ShareSessionMenu sessionId={session.uuid} />
+          </>
+        ) : undefined}
+      >
         {session && isParticipant && (
             <SessionHeader
               session={session}
@@ -314,15 +371,7 @@ export default function Page() {
       </Nav>
       <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col gap-6">
-            {/* Top row with all controls - responsive layout */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              {/* Back button - always visible */}
-              <div className="w-full sm:w-auto">
-                <BackButton href="/" />
-              </div>
-            </div>
-
+          <div className="flex flex-col gap-4">
             {(loading || userLoading) ? (
               <div className="text-center py-10" style={{color: theme.typography.primary}}>Loading...</div>
             ) : error ? (
@@ -334,44 +383,34 @@ export default function Page() {
             ) : !isParticipant ? (
               <div className="text-center py-10" style={{color: theme.typography.primary}}>You are not a participant in this study room.</div>
             ) : (
-              <div className="flex flex-col gap-6 lg:gap-6">
-                {/* Task input - responsive width */}
-                {currentParticipant && session && isParticipant && (
-                  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                    <UserTaskInput
-                      userId={currentParticipant.id}
-                      onSubmit={handleAddTask}
-                      isAdding={taskState.isAddingTask}
-                      error={taskState.error}
-                      isFullWidth={false}
-                    />
+              <div className="flex flex-col gap-4">
+                {/* Room notes */}
+                <RoomNotes
+                  notes={session.notes || ''}
+                  isCreator={user.id === session.creator}
+                  sessionId={session.uuid}
+                  onNotesChange={handleNotesChange}
+                  onEditingChange={(editing) => { isEditingNotes.current = editing; }}
+                  themeColor={session.theme_color}
+                />
 
-                    {/* Settings and Share buttons - responsive alignment */}
-                    {session && isParticipant && (
-                      <div className="w-full sm:w-auto flex items-center justify-end gap-2">
-                        <SettingsMenu
-                          sessionId={session.uuid} 
-                          session={session}
-                          isCreator={user && session.creator === user.id}
-                          isParticipant={isParticipant}
-                          onSessionUpdate={setSession}
-                          onSessionLeave={handleLeaveSession}
-                          onSessionDelete={handleDeleteSession}
-                          taskSortOrder={taskSortOrder}
-                          onTaskSortChange={setTaskSortOrder}
-                          showRankings={showRankings}
-                          onShowRankingsChange={setShowRankings}
-                        />
-                        <ShareSessionMenu sessionId={session.uuid} />
-                      </div>
-                    )}
-                  </div>
+                {/* Task input */}
+                {currentParticipant && session && isParticipant && (
+                  <UserTaskInput
+                    userId={currentParticipant.id}
+                    onSubmit={handleAddTask}
+                    isAdding={taskState.isAddingTask}
+                    error={taskState.error}
+                    isFullWidth={true}
+                    themeColor={session.theme_color}
+                  />
                 )}
+
                 {/* Task columns using CSS columns */}
-                <div className="columns-1 md:columns-2 gap-6 lg:gap-8 [column-fill:_balance]">
+                <div className="columns-1 md:columns-2 gap-4 lg:gap-6 [column-fill:_balance]">
                   {/* Current user's task column */}
                   {currentParticipant && currentParticipantStats && (
-                    <div className="break-inside-avoid mb-6 lg:mb-8">
+                    <div className="break-inside-avoid mb-4 lg:mb-6">
                       <TaskColumn
                         title={`${currentParticipant.username} (you)`}
                         tasks={participantTasks(currentParticipant.id)}
@@ -379,35 +418,32 @@ export default function Page() {
                         onToggleTask={handleToggleTask}
                         onDeleteTask={handleDeleteTask}
                         onEditTask={handleEditTask}
+                        onArchiveDone={handleArchiveDone}
                         togglingTaskId={taskState.togglingTaskId}
                         position={showRankings ? currentParticipantStats.position : undefined}
                         completionPercentage={showRankings ? currentParticipantStats.completionPercentage : undefined}
+                        themeColor={session.theme_color}
                       />
                     </div>
                   )}
 
-                  {/* Other participants' task columns or Share CTA */}
-                  {otherParticipantStats.length > 0 ? (
-                    otherParticipantStats.map(stats => (
-                      <div key={stats.id} className="break-inside-avoid mb-6 lg:mb-8">
-                        <TaskColumn
-                          title={stats.username}
-                          tasks={participantTasks(stats.id)}
-                          isColumnOwner={false}
-                          onToggleTask={handleToggleTask}
-                          onDeleteTask={handleDeleteTask}
-                          onEditTask={handleEditTask}
-                          togglingTaskId={taskState.togglingTaskId}
-                          position={showRankings ? stats.position : undefined}
-                          completionPercentage={showRankings ? stats.completionPercentage : undefined}
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <div className="break-inside-avoid mb-6 lg:mb-8">
-                      <ShareRoomCTA sessionId={session.uuid} />
+                  {/* Other participants' task columns */}
+                  {otherParticipantStats.map(stats => (
+                    <div key={stats.id} className="break-inside-avoid mb-4 lg:mb-6">
+                      <TaskColumn
+                        title={stats.username}
+                        tasks={participantTasks(stats.id)}
+                        isColumnOwner={false}
+                        onToggleTask={handleToggleTask}
+                        onDeleteTask={handleDeleteTask}
+                        onEditTask={handleEditTask}
+                        togglingTaskId={taskState.togglingTaskId}
+                        position={showRankings ? stats.position : undefined}
+                        completionPercentage={showRankings ? stats.completionPercentage : undefined}
+                        themeColor={session.theme_color}
+                      />
                     </div>
-                  )}
+                  ))}
                 </div>
               </div>
             )}

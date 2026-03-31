@@ -2,9 +2,10 @@ import './globals.css';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import ClientLayout from './client-layout';
 import { metadata } from './metadata';
-import { Inter } from 'next/font/google';
+import { Inter, Lora } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
+const lora = Lora({ subsets: ['latin'], variable: '--font-lora' });
 
 export { metadata };
 
@@ -14,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={lora.variable}>
       <body className={inter.className}>
         <ThemeProvider>
           <ClientLayout>

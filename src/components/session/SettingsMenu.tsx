@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHoverBackground } from '@/hooks/useHoverBackground';
-import { useApi } from '@/hooks/useApi';
+import { useApi, getErrorMessage } from '@/hooks/useApi';
 import { useRouter } from 'next/navigation';
 import { DropdownPanel } from '@/components/common/DropdownPanel';
 import { ConfirmationModal } from '@/components/common/ConfirmationModal';
-import { Settings, Edit2, LogOut, Trash2, ArrowUpDown, Trophy } from 'lucide-react';
+import { Settings, Edit2, LogOut, Trash2, ArrowUpDown, Trophy, Palette } from 'lucide-react';
 import { Session } from '@/types/session';
 import { ENDPOINTS } from '@/config/endpoints';
 
@@ -94,9 +94,9 @@ export function SettingsMenu({
       setIsOpen(false); // Close the dropdown after successful update
     } catch (err) {
       console.error('Failed to update session name:', err);
-      setEditState(prev => ({ 
-        ...prev, 
-        error: 'Failed to update session name. Please try again.' 
+      setEditState(prev => ({
+        ...prev,
+        error: getErrorMessage(err, 'Failed to update session name. Please try again.')
       }));
     } finally {
       setEditState(prev => ({ ...prev, isLoading: false }));
@@ -128,7 +128,7 @@ export function SettingsMenu({
       console.error('Failed to delete session:', err);
       setActionState(prev => ({
         ...prev,
-        error: 'Failed to delete session. Please try again.'
+        error: getErrorMessage(err, 'Failed to delete session. Please try again.')
       }));
     } finally {
       setTimeout(() => {
@@ -148,7 +148,7 @@ export function SettingsMenu({
       console.error('Failed to leave session:', err);
       setActionState(prev => ({
         ...prev,
-        error: 'Failed to leave session. Please try again.'
+        error: getErrorMessage(err, 'Failed to leave session. Please try again.')
       }));
     } finally {
       setTimeout(() => {
@@ -163,8 +163,8 @@ export function SettingsMenu({
       <button
         ref={triggerRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer flex items-center gap-2"
-        style={{ 
+        className="p-2 rounded-lg transition-colors duration-200 cursor-pointer flex items-center"
+        style={{
           ...style,
           color: theme.typography.primary,
           cursor: 'pointer'
@@ -174,7 +174,6 @@ export function SettingsMenu({
         title="Room Settings"
       >
         <Settings className="w-5 h-5" />
-        <span className="text-base">Settings</span>
       </button>
 
       {isOpen && (
@@ -257,6 +256,50 @@ export function SettingsMenu({
                   <Edit2 className="w-4 h-4" />
                 </button>
               )}
+            </div>
+
+            {/* Room Theme Color */}
+            <div className="space-y-2 pt-2 border-t" style={{ borderColor: theme.border }}>
+              <h4 className="text-sm font-medium flex items-center gap-2" style={{ color: theme.typography.secondary }}>
+                <Palette className="w-4 h-4" />
+                Room Theme
+              </h4>
+              <div className="flex gap-2 flex-wrap">
+                {[
+                  { color: '#b45309', name: 'Amber' },
+                  { color: '#2563eb', name: 'Blue' },
+                  { color: '#059669', name: 'Green' },
+                  { color: '#db2777', name: 'Pink' },
+                  { color: '#7c3aed', name: 'Purple' },
+                  { color: '#0891b2', name: 'Teal' },
+                  { color: '#dc2626', name: 'Red' },
+                  { color: '', name: 'None' },
+                ].map(({ color, name }) => (
+                  <button
+                    key={name}
+                    onClick={async () => {
+                      try {
+                        const updated = await put<Session>(
+                          ENDPOINTS.SESSIONS.MANAGE.UPDATE.path(session.uuid),
+                          { theme_color: color }
+                        );
+                        onSessionUpdate(updated);
+                      } catch (err) {
+                        console.error('Failed to update theme color:', err);
+                      }
+                    }}
+                    className="w-7 h-7 rounded-full cursor-pointer transition-all duration-150"
+                    style={{
+                      backgroundColor: color || theme.background.tertiary,
+                      border: session.theme_color === color ? '3px solid ' + theme.typography.primary : '2px solid ' + theme.border,
+                      ...(color === '' ? { fontSize: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: theme.typography.secondary } : {}),
+                    }}
+                    title={name}
+                  >
+                    {color === '' && '✕'}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Task Sort Settings */}

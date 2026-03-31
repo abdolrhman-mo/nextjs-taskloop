@@ -5,7 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useState, useEffect, useRef } from 'react';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/config/endpoints';
-import { ThemeToggle } from '@/components/ThemeToggle';
+
 import { DropdownMenu } from './common/DropdownMenu';
 import { useHoverBackground } from '@/hooks/useHoverBackground';
 import { Logo } from './common/Logo';
@@ -21,9 +21,11 @@ interface User {
 
 interface NavProps {
   children?: React.ReactNode;
+  leftAction?: React.ReactNode;
+  rightActions?: React.ReactNode;
 }
 
-export const Nav = ({ children }: NavProps) => {
+export const Nav = ({ children, leftAction, rightActions }: NavProps) => {
   const { theme } = useTheme();
   const [username, setUsername] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -97,33 +99,22 @@ export const Nav = ({ children }: NavProps) => {
   return (
     <>
     <nav 
-      className="py-4 px-4 sm:px-6 lg:px-8 fixed top-0 left-0 right-0 z-50"
+      className="py-3 px-4 sm:px-6 lg:px-8 fixed top-0 left-0 right-0 z-50"
       style={{
         backgroundColor: theme.background.primary,
         // borderBottom: `1px solid ${theme.border}`
       }}
       >
       <div className="max-w-8xl mx-auto flex justify-between items-center">
-        {/* Left section - Logo */}
-        <div className="flex-shrink-0">
-          <Logo />
+        {/* Left section */}
+        <div className="flex-shrink-0 flex items-center gap-1">
+          {leftAction}
+          {children ? children : <Logo />}
         </div>
 
-        {/* Middle section - Optional children */}
-        {children && (
-          <div 
-            className="flex-1 flex justify-center items-center px-4"
-            style={{
-              color: theme.typography.primary
-            }}
-          >
-            {children}
-          </div>
-        )}
-
         {/* Right section - User controls */}
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
+        <div className="flex items-center gap-2">
+          {rightActions}
           
           {/* User menu */}
           {username && (
@@ -159,7 +150,7 @@ export const Nav = ({ children }: NavProps) => {
         </div>
       </div>
     </nav>
-    <div className='h-14'></div>
+    <div className='h-12'></div>
 
     {/* Logout Confirmation Modal */}
     <ConfirmationModal

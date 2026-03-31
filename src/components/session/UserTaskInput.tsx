@@ -1,4 +1,3 @@
-import { useTheme } from '@/contexts/ThemeContext';
 import { TaskInput } from './TaskInput';
 
 interface UserTaskInputProps {
@@ -7,40 +6,25 @@ interface UserTaskInputProps {
   isAdding: boolean;
   error: string | null;
   isFullWidth?: boolean;
+  themeColor?: string;
 }
 
-export function UserTaskInput({ 
-  userId, 
-  onSubmit, 
-  isAdding, 
+export function UserTaskInput({
+  userId,
+  onSubmit,
+  isAdding,
   error,
-  isFullWidth = true 
+  isFullWidth = true,
+  themeColor
 }: UserTaskInputProps) {
-  const { theme } = useTheme();
-
   return (
-    <div className={`${isFullWidth ? 'md:col-span-2' : ''} my-2`}>
-      <div className="max-w-2xl">
-        <div 
-          className="rounded-lg transition-colors duration-200 p-4" 
-          style={{
-            backgroundColor: `${theme.brand.background}10`,
-            border: `1px solid ${theme.border}`
-          }}
-        >
-          <h3 
-            className="text-xl font-bold pb-2"
-            style={{color: theme.typography.primary}}
-          >
-            Add to your todo
-          </h3>
-          <TaskInput
-            onSubmit={(text) => onSubmit(text, userId)}
-            isAdding={isAdding}
-            error={error}
-          />
-        </div>
-      </div>
+    <div className={`${isFullWidth ? 'md:col-span-2' : ''}`}>
+      <TaskInput
+        onSubmit={(text) => onSubmit(text, userId)}
+        isAdding={isAdding}
+        error={error}
+        themeColor={themeColor}
+      />
     </div>
   );
-} 
+}
